@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">192.168.43.132</domain>
+        <domain includeSubdomains="true">192.168.15.26</domain>
+        <domain includeSubdomains="true">192.168.26.132</domain>
+        <domain includeSubdomains="true">192.168.4.221</domain>
+        <domain includeSubdomains="true">10.89.43.181</domain>
+        <domain includeSubdomains="true">192.168.0.135</domain>
+        <domain includeSubdomains="true">10.42.80.165</domain>
+        <domain includeSubdomains="true">10.33.205.132</domain>
+        <domain includeSubdomains="true">192.168.146.132</domain>
+        <domain includeSubdomains="true">192.168.56.1</domain>
+    </domain-config>
+</network-security-config>

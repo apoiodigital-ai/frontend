@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="edit_text_height">80sp</dimen>
+    <dimen name="text_view_size">50sp</dimen>
+    <dimen name="text_view_clue_title_size">30sp</dimen>
+    <dimen name="text_view_clues_size">15sp</dimen>
+    <dimen name="width_clues_spacing">450dp</dimen>
+    <dimen name="padding_clues_background">40dp</dimen>
+    <dimen name="logo_size">180dp</dimen>
+    <dimen name="gray_wave_background">480dp</dimen>
+    <dimen name="button_height">180dp</dimen>
+    <dimen name="button_text_size">40sp</dimen>
+    <dimen name="txtViewWrongInf">16sp</dimen>
+</resources>

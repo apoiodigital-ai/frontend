@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">ApoioDigital_MakingModal</string>
+    <string name="accessibility_service_label">Permissao necessaria para o funcionamento do assistente\n</string>
+    <string name="accessibility_service_description">\n</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="config_options">
+        <item>Média</item>
+        <item>Pequena</item>
+        <item>Grande</item>
+    </string-array>
+</resources>
