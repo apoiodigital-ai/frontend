@@ -1,49 +1,22 @@
 package com.example.apoiodigital.Service;
 
-import com.example.apoiodigital.Globals;
+import com.example.apoiodigital.Model.Atalho;
+import com.example.apoiodigital.Network.RetrofitClient;
 
-import okhttp3.Call;
+import java.util.List;
 
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
+import retrofit2.Call;
 
 public class AtalhoService {
 
-    private String baseUrl = new Globals().BaseUrl;
+    private final ApiService apiService =
+            RetrofitClient.getRetrofitInstance().create(ApiService.class);
 
-    public Call getAll(String usuarioID) {
-
-        OkHttpClient client = new OkHttpClient();
-
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://" + baseUrl + ":8080/atalho/carregar").newBuilder();
-        urlBuilder.addQueryParameter("id_usuario", usuarioID);
-        String url = urlBuilder.build().toString();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        return client.newCall(request);
-
+    public Call<List<Atalho>> getAll(String usuarioID) {
+        return apiService.carregarAtalhos(usuarioID);
     }
 
-    public Call initByID(String atalhoID){
-        OkHttpClient client = new OkHttpClient();
-
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://" + baseUrl + ":8080/atalho/iniciar").newBuilder();
-        urlBuilder.addQueryParameter("id_atalho", atalhoID);
-        String url = urlBuilder.build().toString();
-        RequestBody emptyBody = RequestBody.create(null, new byte[0]);
-
-        Request request = new Request.Builder()
-                .url(url)
-                .method("POST", emptyBody)
-                .header("Content-Length", "0")
-                .build();
-
-        return client.newCall(request);
+    public Call<Void> initByID(String atalhoID) {
+        return apiService.iniciarAtalho(atalhoID);
     }
-
 }

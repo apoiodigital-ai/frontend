@@ -6,18 +6,29 @@ import com.example.apoiodigital.Dto.ListRequisicaoRequestDTO;
 import com.example.apoiodigital.Dto.RefreshRequestDTO;
 import com.example.apoiodigital.Dto.TokenResponseDTO;
 import com.example.apoiodigital.Dto.UserIDDTO;
+import com.example.apoiodigital.Model.Atalho;
+import com.example.apoiodigital.Model.CryptedRequestIA;
+import com.example.apoiodigital.Model.RequisicaoInput;
+import com.example.apoiodigital.Model.RequisicaoResponse;
+import com.example.apoiodigital.Model.STTResponse;
 import com.example.apoiodigital.Model.User;
 
 import java.util.List;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiService {
+
+    // ── Auth / Usuário ────────────────────────────────────────────────────────
+
     @POST("usuario/salvar")
     Call<User> criarConta(@Body User usuario);
 
@@ -28,12 +39,36 @@ public interface ApiService {
     @POST("auth/refresh")
     Call<AccessTokenDTO> refresh(@Body RefreshRequestDTO request);
 
+    @GET("usuario/me")
+    Call<UserIDDTO> pegarUsuarioIdPorToken(@Query("token") String token);
+
+    // ── Requisição ────────────────────────────────────────────────────────────
+
+    @POST("requisicao/enviar")
+    Call<RequisicaoResponse> enviarRequisicao(@Body RequisicaoInput requisicaoInput);
+
     @GET("requisicao/carregar")
     Call<ListRequisicaoRequestDTO> pegarHistoriocRequisicaoPorUsuario(@Query("token") String token);
 
-    @GET("resposta/listar/{idReq}")
-    Call<List<IAResponseDTO>> pegarIAResponsePorRequisicao(@Path("idReq")String idReq);
+    // ── Resposta / IA ─────────────────────────────────────────────────────────
 
-    @GET("usuario/me")
-    Call<UserIDDTO> pegarUsuarioIdPorToken(@Query("token") String token);
+    @POST("resposta/exigir")
+    Call<String> exigirRespostaIA(@Body CryptedRequestIA requestDTO);
+
+    @GET("resposta/listar/{idReq}")
+    Call<List<IAResponseDTO>> pegarIAResponsePorRequisicao(@Path("idReq") String idReq);
+
+    // ── Atalho ────────────────────────────────────────────────────────────────
+
+    @GET("atalho/carregar")
+    Call<List<Atalho>> carregarAtalhos(@Query("id_usuario") String idUsuario);
+
+    @POST("atalho/iniciar")
+    Call<Void> iniciarAtalho(@Query("id_atalho") String idAtalho);
+
+    // ── STT (porta 5000 — use getSttRetrofitInstance) ─────────────────────────
+
+    @Multipart
+    @POST("stt")
+    Call<STTResponse> stt(@Part MultipartBody.Part audio);
 }

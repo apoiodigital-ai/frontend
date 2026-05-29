@@ -4,25 +4,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.apoiodigital.Model.CryptedRequestIA;
 import com.example.apoiodigital.Repository.TutorialRepository;
 import com.example.apoiodigital.Service.RespostaService;
 
-import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class TutorialViewModel {
 
-    private RespostaService respostaService = new RespostaService();
-    private TutorialRepository tutorialRepository = new TutorialRepository(respostaService);
-    private MutableLiveData<Boolean> isRespostaLoading = new MutableLiveData<>();
+    private final RespostaService respostaService = new RespostaService();
+    private final TutorialRepository tutorialRepository = new TutorialRepository(respostaService);
+    private final MutableLiveData<Boolean> isRespostaLoading = new MutableLiveData<>();
     private String dataResponse;
-    private String TAG = "TutorialViewModelLOGE";
+    private final String TAG = "TutorialViewModelLOGE";
 
     private final Context context;
 
@@ -30,40 +28,28 @@ public class TutorialViewModel {
         this.context = context;
     }
 
-    public void getResponseIA(CryptedRequestIA requestDTO){
+    public void getResponseIA(CryptedRequestIA requestDTO) {
         isRespostaLoading.postValue(true);
-        var call = tutorialRepository.getIaMessage(requestDTO);
-
-        call.enqueue(new okhttp3.Callback() {
+        tutorialRepository.getIaMessage(requestDTO).enqueue(new Callback<String>() {
             @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                Log.e(TAG, "onFailure: " + e.getMessage() );
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                String responseBody = response.body().string();
-
-                if(response.isSuccessful()) {
-//                    Log.e(TAG, "Response "+ responseBody);
-                    dataResponse = responseBody;
-                    Log.e(TAG, "onResponse: " + dataResponse );
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    dataResponse = response.body();
+                    Log.e(TAG, "onResponse: " + dataResponse);
 
                     Intent responseIntent = new Intent("com.example.apoiodigital.GET_RESPONSE_IA");
                     responseIntent.putExtra("responseIA", dataResponse);
-
                     context.sendBroadcast(responseIntent);
-
-                }else{
-//                    Log.e(TAG, response.message().toString() );
-                    Log.e(TAG, "Erro: " +response.code());
+                } else {
+                    Log.e(TAG, "Erro: " + response.code());
                 }
             }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.e(TAG, "onFailure: " + t.getMessage());
+                t.printStackTrace();
+            }
         });
-
-
-
     }
-
 }

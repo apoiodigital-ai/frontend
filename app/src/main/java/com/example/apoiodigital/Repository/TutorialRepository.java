@@ -1,20 +1,19 @@
 package com.example.apoiodigital.Repository;
 
-import okhttp3.Call;
-
 import com.example.apoiodigital.Model.CryptedRequestIA;
 import com.example.apoiodigital.Service.RespostaService;
+
+import retrofit2.Call;
 
 public class TutorialRepository {
 
     private final RespostaService respostaService;
 
-
     public TutorialRepository(RespostaService respostaService) {
         this.respostaService = respostaService;
     }
 
-    public Call getIaMessage(CryptedRequestIA requestDTO){
+    public Call<String> getIaMessage(CryptedRequestIA requestDTO) {
         return respostaService.getMessageIA(requestDTO);
     }
 }
