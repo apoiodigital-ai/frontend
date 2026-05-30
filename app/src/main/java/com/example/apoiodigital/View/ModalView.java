@@ -23,6 +23,7 @@ import com.example.apoiodigital.databinding.ModalLayoutBinding;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class ModalView extends View {
 
@@ -115,6 +116,7 @@ public class ModalView extends View {
         viewModel.getRequisicaoResponse().observeForever(resp -> {
 
             String pacoteApp = resp.getRequisicao().getAppSuportado().getPacote();
+            String contextoTela = "O usuario acabou de abrir a o aplicativo ";
 
             PackageManager pm = context.getPackageManager();
             Intent intent = pm.getLaunchIntentForPackage(pacoteApp);
@@ -122,21 +124,35 @@ public class ModalView extends View {
             if (intent != null) {
                 // O app está instalado, vamos abri-lo
                 context.startActivity(intent);
+                contextoTela += resp.getRequisicao().getAppSuportado().getNome() + " e segue esperando para o proximo passo";
             } else {
                 // O app NÃO está instalado, vamos para a Play Store
                 try {
                     // Tenta abrir diretamente pelo app da Play Store
                     context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + pacoteApp)));
+                    contextoTela += "PlayStore. Ele precisa instalar o aplicativo " + resp.getRequisicao().getAppSuportado().getNome() + " primeiro";
                 } catch (ActivityNotFoundException e) {
                     // Se a Play Store não estiver instalada, abre pelo navegador
+                    contextoTela += "Navegador no site da PlayStore. Ele precisa instalar o aplicativo " + resp.getRequisicao().getAppSuportado().getNome() + " primeiro";
+
                     context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + pacoteApp)));
                 }
             }
 
-//            Intent i = new Intent("com.example.apoiodigital.SEND_TO_IA");
-//            i.putExtra("prompt", resp.getPrompt());
-//            i.putExtra("id_requisicao", resp.getId());
-//            context.sendBroadcast(i);
+
+
+            Intent i = new Intent("com.example.apoiodigital.SEND_TO_IA");
+            i.putExtra("prompt", resp.getRequisicao().getPrompt());
+            i.putExtra("id_requisicao", resp.getRequisicao().getId());
+            i.putExtra("contexto", contextoTela);
+
+            try {
+                TimeUnit.SECONDS.sleep(3);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            context.sendBroadcast(i);
         });
 
         viewModel.getAtalhos().observeForever(atalhos -> {

@@ -12,11 +12,9 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.example.apoiodigital.Dto.FindBestAnswerResponseDTO;
 import com.example.apoiodigital.Model.Bounds;
 import com.example.apoiodigital.Model.FindBestAnswerRequestDTO;
-import com.example.apoiodigital.Model.CryptedResponseIA;
-import com.example.apoiodigital.Model.DescryptedRequestIA;
-import com.example.apoiodigital.Model.DescryptedResponseIA;
 import com.example.apoiodigital.Model.UiComponent;
 import com.example.apoiodigital.Service.CryptService;
 import com.example.apoiodigital.ViewModel.tutorial.TutorialViewModel;
@@ -37,54 +35,42 @@ public class GetElementService extends AccessibilityService {
     private List<AccessibilityNodeInfo> nodesSent = new ArrayList<>();
     private int idComponent = 0;
     private static final String TAG = "GetElementService";
-    private String requisicaoCache;
+    private String promptCache;
     private String requisicaoIdCache;
     private String contextoCache = "";
 
     private static final String APOIODIGITAL_PACKAGE = "com.example.apoiodigital_makingmodal"; // seu pacote aqui
 
-
     private final BroadcastReceiver receiverSendComponents = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-//
-//            var gson = new Gson();
-//
-//            getViewEvent();
-//
-//            String requisicao = intent.getStringExtra("prompt");
-//            String id_requisicao = intent.getStringExtra("id_requisicao");
-//            DescryptedRequestIA descryptedRequestIA = new DescryptedRequestIA();
-//            descryptedRequestIA.setElementos(components);
-//            descryptedRequestIA.setContexto(contextoCache);
-//            if(requisicao != null){
-//                requisicaoCache = requisicao;
-//            }
-//            if(id_requisicao != null){
-//                requisicaoIdCache = id_requisicao;
-//            }
-//
-//            descryptedRequestIA.setPergunta(requisicaoCache);
-//
-//
-//            String descryptedJson = gson.toJson(descryptedRequestIA);
-//
-//            CryptService cryptService = new CryptService();
-//            String publicKey = cryptService.getPublicKey();
-//            String cryptedJson = cryptService.encripty(descryptedJson, publicKey);
-//
-//            FindBestAnswerRequestDTO cryptedRequestIA = new FindBestAnswerRequestDTO();
-//            cryptedRequestIA.setTextCrypted(cryptedJson);
-//            cryptedRequestIA.setKey(publicKey);
-//            cryptedRequestIA.setId_requisicao(requisicaoIdCache);
-//
-//            Log.e(TAG, "onReceive: " + id_requisicao);
-//            Log.e(TAG, "onReceive: " + cryptedRequestIA);
-//
-//            service.getResponseIA(cryptedRequestIA);
+
+            getViewEvent();
+
+            String prompt = intent.getStringExtra("prompt");
+            String id_requisicao = intent.getStringExtra("id_requisicao");
+            String contexto = intent.getStringExtra("contexto");
+            FindBestAnswerRequestDTO requestDTO = new FindBestAnswerRequestDTO();
+            requestDTO.setElementos(components);
+            requestDTO.setContexto(contextoCache);
+
+            if(prompt != null){
+                promptCache = prompt;
+            }
+            if(id_requisicao != null){
+                requisicaoIdCache = id_requisicao;
+            }
+            if(contextoCache != null && contextoCache.isEmpty() && contexto != null){
+                contextoCache = contexto;
+            }
+
+            requestDTO.setPrompt(promptCache);
+
+            service.getResponseIA(requestDTO);
         }
     };
 
+    // This function is used to receive the response from the IA and to send other broadcast to MaskActivity
     private final BroadcastReceiver receiverResponseIA = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -93,29 +79,24 @@ public class GetElementService extends AccessibilityService {
                     .create();
 
             String response = intent.getStringExtra("responseIA");
-            Log.e("CryptServiceLOGE", "onReceive: " + response );
 
-            CryptedResponseIA responseIA = gson.fromJson(response, CryptedResponseIA.class);
+            FindBestAnswerResponseDTO responseIA = gson.fromJson(response, FindBestAnswerResponseDTO.class);
 
-            CryptService cryptService = new CryptService();
-            var json = cryptService.descrypt(responseIA.getIaMessage(), responseIA.getKey());
-            Log.e("CryptServiceLOGE", "onReceiveDesc1: " + json );
+            if( responseIA.getViewID() == null) return;
 
-            DescryptedResponseIA descryptedResponseIA = gson.fromJson(json, DescryptedResponseIA.class);
-            contextoCache+=descryptedResponseIA.getContext();
-            if( descryptedResponseIA.getViewID() == null) return;
+            chosedComponent = nodesSent.get(responseIA.getViewID()-1);
 
-            chosedComponent = nodesSent.get(descryptedResponseIA.getViewID()-1);
+            contextoCache = responseIA.getNovo_contexto();
+
             var rect = new Rect();
             chosedComponent.getBoundsInScreen(rect);
             Bounds bounds = new Bounds(rect.left, rect.right, rect.top, rect.bottom);
 
             String boundsJson = gson.toJson(bounds);
-            Log.e("CryptServiceLOGE", "onReceiveDesc2: " + boundsJson );
 
             var intentMask = new Intent("com.example.apoiodigital.SET_MASK_VIEW");
             intentMask.putExtra("chosedComponentBounds", boundsJson);
-            intentMask.putExtra("messageIA", descryptedResponseIA.getMessageIA());
+            intentMask.putExtra("messageIA", responseIA.getMensagem_escrita());
             sendBroadcast(intentMask);
         }};
 
@@ -137,7 +118,7 @@ public class GetElementService extends AccessibilityService {
             }
 
             var intentSendToIA = new Intent("com.example.apoiodigital.SEND_TO_IA");
-            intentSendToIA.putExtra("requisicao", requisicaoCache);
+            intentSendToIA.putExtra("requisicao", promptCache);
             sendBroadcast(intentSendToIA);
 
         }

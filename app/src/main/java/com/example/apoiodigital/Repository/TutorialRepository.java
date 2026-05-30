@@ -1,5 +1,6 @@
 package com.example.apoiodigital.Repository;
 
+import com.example.apoiodigital.Dto.FindBestAnswerResponseDTO;
 import com.example.apoiodigital.Model.FindBestAnswerRequestDTO;
 import com.example.apoiodigital.Service.RespostaService;
 
@@ -13,7 +14,7 @@ public class TutorialRepository {
         this.respostaService = respostaService;
     }
 
-    public Call<String> getIaMessage(FindBestAnswerRequestDTO requestDTO) {
+    public Call<FindBestAnswerResponseDTO> getIaMessage(FindBestAnswerRequestDTO requestDTO) {
         return respostaService.getMessageIA(requestDTO);
     }
 }

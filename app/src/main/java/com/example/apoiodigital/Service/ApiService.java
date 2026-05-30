@@ -1,6 +1,7 @@
 package com.example.apoiodigital.Service;
 
 import com.example.apoiodigital.Dto.AccessTokenDTO;
+import com.example.apoiodigital.Dto.FindBestAnswerResponseDTO;
 import com.example.apoiodigital.Dto.IAResponseDTO;
 import com.example.apoiodigital.Dto.ListRequisicaoRequestDTO;
 import com.example.apoiodigital.Dto.RefreshRequestDTO;
@@ -58,7 +59,7 @@ public interface ApiService {
     // ── Resposta / IA ─────────────────────────────────────────────────────────
 
     @POST("resposta/achar-resposta")
-    Call<String> exigirRespostaIA(@Body FindBestAnswerRequestDTO requestDTO);
+    Call<FindBestAnswerResponseDTO> exigirRespostaIA(@Body FindBestAnswerRequestDTO requestDTO);
 
     @GET("resposta/listar/{idReq}")
     Call<List<IAResponseDTO>> pegarIAResponsePorRequisicao(@Path("idReq") String idReq);

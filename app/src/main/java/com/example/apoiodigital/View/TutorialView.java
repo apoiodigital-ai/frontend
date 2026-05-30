@@ -34,8 +34,7 @@ public class TutorialView extends View{
             if(response == null) return;
 
             var bounds = gson.fromJson(response, Bounds.class);
-            Log.e("CryptServiceLOGE", "onReceiveBounds: " + (bounds.getBottom() > getHeight()/2));
-            Log.e("CryptServiceLOGE", "onReceiveBounds: " + getHeight()/2);
+
             mask.setPositions(bounds);
 
             binding.mensagem.setText(messageIA);
