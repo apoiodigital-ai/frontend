@@ -86,15 +86,15 @@ public class ModalViewModel extends ViewModel {
 
     public void iniciarAtalho(String atalhoID) {
         requisicaoSendLoading.postValue(true);
-        modalRepository.initAtalho(atalhoID).enqueue(new Callback<Void>() {
+        modalRepository.initAtalho(atalhoID).enqueue(new Callback<Requisicao>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(Call<Requisicao> call, Response<Requisicao> response) {
                 // atalhoResponse mantido para compatibilidade; sem body neste endpoint
-                atalhoResponse.postValue(response.isSuccessful() ? new Requisicao() : null);
+                atalhoResponse.postValue(response.isSuccessful() ? response.body() : null);
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(Call<Requisicao> call, Throwable t) {
                 atalhoResponse.postValue(null);
             }
         });

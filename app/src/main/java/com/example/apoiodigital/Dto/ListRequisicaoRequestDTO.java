@@ -3,16 +3,16 @@ package com.example.apoiodigital.Dto;
 import java.util.List;
 
 public class ListRequisicaoRequestDTO {
-    private String timestamp;
+    private String criacao;
 
     private List<RequisicaoDTO> requisicoes;
 
-    public String getTimestamp() {
-        return timestamp;
+    public String getCriacao() {
+        return criacao;
     }
 
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
+    public void setCriacao(String criacao) {
+        this.criacao = criacao;
     }
 
     public List<RequisicaoDTO> getRequisicoes() {
@@ -23,8 +23,8 @@ public class ListRequisicaoRequestDTO {
         this.requisicoes = requisicoes;
     }
 
-    public ListRequisicaoRequestDTO(String timestamp, List<RequisicaoDTO> requisicoes) {
-        this.timestamp = timestamp;
+    public ListRequisicaoRequestDTO(String criacao, List<RequisicaoDTO> requisicoes) {
+        this.criacao = criacao;
         this.requisicoes = requisicoes;
     }
 }

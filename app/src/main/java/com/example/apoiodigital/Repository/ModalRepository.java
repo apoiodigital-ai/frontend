@@ -1,6 +1,7 @@
 package com.example.apoiodigital.Repository;
 
 import com.example.apoiodigital.Model.Atalho;
+import com.example.apoiodigital.Model.Requisicao;
 import com.example.apoiodigital.Model.RequisicaoInput;
 import com.example.apoiodigital.Model.RequisicaoResponse;
 import com.example.apoiodigital.Model.STTResponse;
@@ -29,7 +30,7 @@ public class ModalRepository {
         return atalhoService.getAll(usuarioID);
     }
 
-    public Call<Void> initAtalho(String atalhoID) {
+    public Call<Requisicao> initAtalho(String atalhoID) {
         return atalhoService.initByID(atalhoID);
     }
 

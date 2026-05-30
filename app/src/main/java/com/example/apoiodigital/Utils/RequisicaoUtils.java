@@ -53,7 +53,7 @@ public class RequisicaoUtils {
 
         Calendar hoje = Calendar.getInstance();
         try {
-            String serverTime = datas.getTimestamp();
+            String serverTime = datas.getCriacao();
             if (serverTime.contains(".")) {
                 serverTime = serverTime.substring(0, 23) + "Z";
             }

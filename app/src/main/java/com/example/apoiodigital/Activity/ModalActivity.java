@@ -130,8 +130,9 @@ public class ModalActivity {
             public void onClick(View view) {
 
                 var prompt = input.getText().toString();
+                Log.e("VIEWMODEL", "onClick: " + prompt );
                 if(usuarioID == null) return;
-                if(prompt.equals("") || prompt == null) return;
+                if(prompt.isEmpty() || input.getText() == null) return;
 
                 var reqInput = new RequisicaoInput(prompt, usuarioID);
                 viewModel.enviarRequisicao(reqInput);

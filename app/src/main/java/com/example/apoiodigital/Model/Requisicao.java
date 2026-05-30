@@ -6,6 +6,16 @@ public class Requisicao {
     private String prompt;
     private String timeStamp;
 
+    private AppSuportado appSuportado;
+
+    public AppSuportado getAppSuportado() {
+        return appSuportado;
+    }
+
+    public void setAppSuportado(AppSuportado appSuportado) {
+        this.appSuportado = appSuportado;
+    }
+
     public String getId() {
         return id;
     }

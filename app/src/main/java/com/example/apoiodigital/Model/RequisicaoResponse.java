@@ -2,24 +2,23 @@ package com.example.apoiodigital.Model;
 
 public class RequisicaoResponse {
 
-    private String id;
+    private Requisicao requisicao;
 
-    private String prompt;
+    private Requisicao requisicaoMatch;
 
-    public String getId() {
-        return id;
+    public Requisicao getRequisicao() {
+        return requisicao;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setRequisicao(Requisicao requisicao) {
+        this.requisicao = requisicao;
     }
 
-    public String getPrompt() {
-        return prompt;
+    public Requisicao getRequisicaoMatch() {
+        return requisicaoMatch;
     }
 
-    public void setPrompt(String prompt) {
-        this.prompt = prompt;
+    public void setRequisicaoMatch(Requisicao requisicaoMatch) {
+        this.requisicaoMatch = requisicaoMatch;
     }
-
 }

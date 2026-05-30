@@ -13,7 +13,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.example.apoiodigital.Model.Bounds;
-import com.example.apoiodigital.Model.CryptedRequestIA;
+import com.example.apoiodigital.Model.FindBestAnswerRequestDTO;
 import com.example.apoiodigital.Model.CryptedResponseIA;
 import com.example.apoiodigital.Model.DescryptedRequestIA;
 import com.example.apoiodigital.Model.DescryptedResponseIA;
@@ -47,41 +47,41 @@ public class GetElementService extends AccessibilityService {
     private final BroadcastReceiver receiverSendComponents = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-
-            var gson = new Gson();
-
-            getViewEvent();
-
-            String requisicao = intent.getStringExtra("prompt");
-            String id_requisicao = intent.getStringExtra("id_requisicao");
-            DescryptedRequestIA descryptedRequestIA = new DescryptedRequestIA();
-            descryptedRequestIA.setElementos(components);
-            descryptedRequestIA.setContexto(contextoCache);
-            if(requisicao != null){
-                requisicaoCache = requisicao;
-            }
-            if(id_requisicao != null){
-                requisicaoIdCache = id_requisicao;
-            }
-
-            descryptedRequestIA.setPergunta(requisicaoCache);
-
-
-            String descryptedJson = gson.toJson(descryptedRequestIA);
-
-            CryptService cryptService = new CryptService();
-            String publicKey = cryptService.getPublicKey();
-            String cryptedJson = cryptService.encripty(descryptedJson, publicKey);
-
-            CryptedRequestIA cryptedRequestIA = new CryptedRequestIA();
-            cryptedRequestIA.setTextCrypted(cryptedJson);
-            cryptedRequestIA.setKey(publicKey);
-            cryptedRequestIA.setId_requisicao(requisicaoIdCache);
-
-            Log.e(TAG, "onReceive: " + id_requisicao);
-            Log.e(TAG, "onReceive: " + cryptedRequestIA);
-
-            service.getResponseIA(cryptedRequestIA);
+//
+//            var gson = new Gson();
+//
+//            getViewEvent();
+//
+//            String requisicao = intent.getStringExtra("prompt");
+//            String id_requisicao = intent.getStringExtra("id_requisicao");
+//            DescryptedRequestIA descryptedRequestIA = new DescryptedRequestIA();
+//            descryptedRequestIA.setElementos(components);
+//            descryptedRequestIA.setContexto(contextoCache);
+//            if(requisicao != null){
+//                requisicaoCache = requisicao;
+//            }
+//            if(id_requisicao != null){
+//                requisicaoIdCache = id_requisicao;
+//            }
+//
+//            descryptedRequestIA.setPergunta(requisicaoCache);
+//
+//
+//            String descryptedJson = gson.toJson(descryptedRequestIA);
+//
+//            CryptService cryptService = new CryptService();
+//            String publicKey = cryptService.getPublicKey();
+//            String cryptedJson = cryptService.encripty(descryptedJson, publicKey);
+//
+//            FindBestAnswerRequestDTO cryptedRequestIA = new FindBestAnswerRequestDTO();
+//            cryptedRequestIA.setTextCrypted(cryptedJson);
+//            cryptedRequestIA.setKey(publicKey);
+//            cryptedRequestIA.setId_requisicao(requisicaoIdCache);
+//
+//            Log.e(TAG, "onReceive: " + id_requisicao);
+//            Log.e(TAG, "onReceive: " + cryptedRequestIA);
+//
+//            service.getResponseIA(cryptedRequestIA);
         }
     };
 

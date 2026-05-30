@@ -5,9 +5,14 @@ import com.example.apoiodigital.Dto.IAResponseDTO;
 import com.example.apoiodigital.Dto.ListRequisicaoRequestDTO;
 import com.example.apoiodigital.Dto.RefreshRequestDTO;
 import com.example.apoiodigital.Dto.TokenResponseDTO;
+import com.example.apoiodigital.Dto.UserAnswerValidatorRequestDTO;
+import com.example.apoiodigital.Dto.UserAnswerValidatorResponseDTO;
 import com.example.apoiodigital.Dto.UserIDDTO;
 import com.example.apoiodigital.Model.Atalho;
-import com.example.apoiodigital.Model.CryptedRequestIA;
+import com.example.apoiodigital.Dto.ChecksInformationNeedsRequestDTO;
+import com.example.apoiodigital.Dto.ChecksInformationNeedsResponseDTO;
+import com.example.apoiodigital.Model.FindBestAnswerRequestDTO;
+import com.example.apoiodigital.Model.Requisicao;
 import com.example.apoiodigital.Model.RequisicaoInput;
 import com.example.apoiodigital.Model.RequisicaoResponse;
 import com.example.apoiodigital.Model.STTResponse;
@@ -52,11 +57,20 @@ public interface ApiService {
 
     // ── Resposta / IA ─────────────────────────────────────────────────────────
 
-    @POST("resposta/exigir")
-    Call<String> exigirRespostaIA(@Body CryptedRequestIA requestDTO);
+    @POST("resposta/achar-resposta")
+    Call<String> exigirRespostaIA(@Body FindBestAnswerRequestDTO requestDTO);
 
     @GET("resposta/listar/{idReq}")
     Call<List<IAResponseDTO>> pegarIAResponsePorRequisicao(@Path("idReq") String idReq);
+
+    @POST("/validar/necessidade-informacoes")
+    Call<ChecksInformationNeedsResponseDTO> validarNecessidadeInformacoes(
+            @Body ChecksInformationNeedsRequestDTO requestDTO);
+
+    @POST("validar/respostra-necessidade")
+    Call<UserAnswerValidatorResponseDTO> validarRespostaDaNecessidade(
+            @Body UserAnswerValidatorRequestDTO request
+    );
 
     // ── Atalho ────────────────────────────────────────────────────────────────
 
@@ -64,7 +78,7 @@ public interface ApiService {
     Call<List<Atalho>> carregarAtalhos(@Query("id_usuario") String idUsuario);
 
     @POST("atalho/iniciar")
-    Call<Void> iniciarAtalho(@Query("id_atalho") String idAtalho);
+    Call<Requisicao> iniciarAtalho(@Query("id_atalho") String idAtalho);
 
     // ── STT (porta 5000 — use getSttRetrofitInstance) ─────────────────────────
 

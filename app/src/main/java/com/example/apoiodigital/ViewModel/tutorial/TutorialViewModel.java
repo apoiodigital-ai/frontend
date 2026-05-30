@@ -6,7 +6,7 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.apoiodigital.Model.CryptedRequestIA;
+import com.example.apoiodigital.Model.FindBestAnswerRequestDTO;
 import com.example.apoiodigital.Repository.TutorialRepository;
 import com.example.apoiodigital.Service.RespostaService;
 
@@ -28,7 +28,7 @@ public class TutorialViewModel {
         this.context = context;
     }
 
-    public void getResponseIA(CryptedRequestIA requestDTO) {
+    public void getResponseIA(FindBestAnswerRequestDTO requestDTO) {
         isRespostaLoading.postValue(true);
         tutorialRepository.getIaMessage(requestDTO).enqueue(new Callback<String>() {
             @Override

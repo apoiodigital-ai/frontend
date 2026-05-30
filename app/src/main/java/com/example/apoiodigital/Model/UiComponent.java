@@ -6,7 +6,7 @@ public class UiComponent {
 
     private final String className;
 
-    private final String addicionalInfo;
+    private final String additionalInfo;
 
     public int getViewID() { return viewID; }
 
@@ -15,13 +15,13 @@ public class UiComponent {
     }
 
     public String getAddicionalInfo() {
-        return addicionalInfo;
+        return additionalInfo;
     }
 
     public UiComponent(int viewId, String className, String addicionalInfo) {
         this.viewID = viewId;
         this.className = className;
-        this.addicionalInfo = addicionalInfo;
+        this.additionalInfo = addicionalInfo;
     }
 
 }

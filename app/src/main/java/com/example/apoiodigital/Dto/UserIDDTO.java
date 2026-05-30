@@ -3,9 +3,9 @@ package com.example.apoiodigital.Dto;
 import java.util.UUID;
 
 public class UserIDDTO {
-    private UUID UserId;
+    private UUID userId;
 
     public UUID getUserID() {
-        return UserId;
+        return userId;
     }
 }

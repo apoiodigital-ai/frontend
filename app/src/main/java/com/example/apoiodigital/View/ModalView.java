@@ -1,7 +1,10 @@
 package com.example.apoiodigital.View;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -110,11 +113,30 @@ public class ModalView extends View {
         });
 
         viewModel.getRequisicaoResponse().observeForever(resp -> {
-            Log.e("VIEWMODELMODAL", "setViewObservers: " + resp.getId() );
-            Intent i = new Intent("com.example.apoiodigital.SEND_TO_IA");
-            i.putExtra("prompt", resp.getPrompt());
-            i.putExtra("id_requisicao", resp.getId());
-            context.sendBroadcast(i);
+
+            String pacoteApp = resp.getRequisicao().getAppSuportado().getPacote();
+
+            PackageManager pm = context.getPackageManager();
+            Intent intent = pm.getLaunchIntentForPackage(pacoteApp);
+
+            if (intent != null) {
+                // O app está instalado, vamos abri-lo
+                context.startActivity(intent);
+            } else {
+                // O app NÃO está instalado, vamos para a Play Store
+                try {
+                    // Tenta abrir diretamente pelo app da Play Store
+                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + pacoteApp)));
+                } catch (ActivityNotFoundException e) {
+                    // Se a Play Store não estiver instalada, abre pelo navegador
+                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + pacoteApp)));
+                }
+            }
+
+//            Intent i = new Intent("com.example.apoiodigital.SEND_TO_IA");
+//            i.putExtra("prompt", resp.getPrompt());
+//            i.putExtra("id_requisicao", resp.getId());
+//            context.sendBroadcast(i);
         });
 
         viewModel.getAtalhos().observeForever(atalhos -> {
