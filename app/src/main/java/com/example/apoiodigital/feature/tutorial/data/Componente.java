@@ -1,0 +1,27 @@
+package com.example.apoiodigital.feature.tutorial.data;
+
+public class Componente {
+
+    private final int viewID;
+
+    private final String className;
+
+    private final String additionalInfo;
+
+    public int getViewID() { return viewID; }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public String getAddicionalInfo() {
+        return additionalInfo;
+    }
+
+    public Componente(int viewId, String className, String addicionalInfo) {
+        this.viewID = viewId;
+        this.className = className;
+        this.additionalInfo = addicionalInfo;
+    }
+
+}

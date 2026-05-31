@@ -46,7 +46,7 @@
         android:visibility="invisible">
 
 
-        <com.example.apoiodigital.View.MaskView
+        <com.example.apoiodigital.feature.tutorial.MaskView
             android:id="@+id/mask"
             android:layout_width="0dp"
             android:layout_height="0dp"
