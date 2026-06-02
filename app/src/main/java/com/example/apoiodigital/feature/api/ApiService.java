@@ -5,9 +5,8 @@ import com.example.apoiodigital.feature.tutorial.data.FindBestAnswerResponseDTO;
 import com.example.apoiodigital.feature.history.data.IAResponseDTO;
 import com.example.apoiodigital.feature.history.data.ListRequisicaoRequestDTO;
 import com.example.apoiodigital.feature.auth.data.RefreshRequestDTO;
-import com.example.apoiodigital.feature.auth.data.TokenResponseDTO;
-import com.example.apoiodigital.feature.usuario.data.UserAnswerValidatorRequestDTO;
-import com.example.apoiodigital.feature.usuario.data.UserAnswerValidatorResponseDTO;
+import com.example.apoiodigital.feature.screenQuestion.UserAnswerValidatorRequestDTO;
+import com.example.apoiodigital.feature.screenQuestion.UserAnswerValidatorResponseDTO;
 import com.example.apoiodigital.feature.usuario.data.UserIDDTO;
 import com.example.apoiodigital.core.tables.atalho.Atalho;
 import com.example.apoiodigital.feature.tutorial.data.ChecksInformationNeedsRequestDTO;
@@ -79,7 +78,4 @@ public interface ApiService {
 
     // ── STT (porta 5000 — use getSttRetrofitInstance) ─────────────────────────
 
-    @Multipart
-    @POST("stt")
-    Call<STTResponse> stt(@Part MultipartBody.Part audio);
 }

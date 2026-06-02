@@ -24,8 +24,10 @@ import com.example.apoiodigital.feature.modal.data.RequisicaoResponse;
 import com.example.apoiodigital.R;
 import com.example.apoiodigital.core.Utils.FontUtils;
 import com.example.apoiodigital.feature.modal.ModalView;
+import com.example.apoiodigital.feature.modal.viewmodel.AtalhoViewModel;
+import com.example.apoiodigital.feature.modal.viewmodel.RequisicaoViewModel;
 import com.example.apoiodigital.feature.tutorial.TutorialView;
-import com.example.apoiodigital.feature.modal.ModalViewModel;
+import com.example.apoiodigital.feature.modal.viewmodel.AudioViewModel;
 import com.example.apoiodigital.databinding.OverlayLayoutBinding;
 
 public class HomeFragment extends Fragment {
@@ -33,7 +35,9 @@ public class HomeFragment extends Fragment {
     private final Context _context;
     private OverlayLayoutBinding binding;
     private View mainOverlay;
-    private ModalViewModel viewModel;
+    private AudioViewModel viewModel;
+    private RequisicaoViewModel requisicaoViewModel;
+    private AtalhoViewModel atalhoViewModel;
 
     public HomeFragment(Context context) {
         _context = context;
@@ -45,7 +49,9 @@ public class HomeFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         FontUtils.applyFontSize(requireContext(), rootView);
-        viewModel = new ViewModelProvider(requireActivity()).get(ModalViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(AudioViewModel.class);
+        requisicaoViewModel = new ViewModelProvider(requireActivity()).get(RequisicaoViewModel.class);
+        atalhoViewModel = new ViewModelProvider(requireActivity()).get(AtalhoViewModel.class);
 
         var btnStart = rootView.findViewById(R.id.btnStartModal);
         btnStart.setOnClickListener(v -> {
@@ -63,7 +69,9 @@ public class HomeFragment extends Fragment {
             windowManager.addView(mainOverlay, params);
 
             binding = OverlayLayoutBinding.bind(mainOverlay);
-            View modalController = new ModalView(viewModel, _context, layoutInflater, binding.container);
+
+            View modalController = new ModalView(viewModel, _context, layoutInflater, binding.container, requisicaoViewModel, atalhoViewModel);
+
             binding.container.addView(modalController);
 
             viewModel.getAtalhoResponse().observeForever(new Observer<Requisicao>() {
@@ -73,7 +81,7 @@ public class HomeFragment extends Fragment {
                 }
             });
 
-            viewModel.getRequisicaoResponse().observeForever(new Observer<RequisicaoResponse>() {
+            requisicaoViewModel.getRequisicaoResponse().observeForever(new Observer<RequisicaoResponse>() {
                 @Override
                 public void onChanged(RequisicaoResponse requisicaoResponse) {
                     afterRequisicaoSent(windowManager, inflater);

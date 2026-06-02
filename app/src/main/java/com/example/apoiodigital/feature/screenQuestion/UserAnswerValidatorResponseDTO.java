@@ -1,4 +1,4 @@
-package com.example.apoiodigital.feature.usuario.data;
+package com.example.apoiodigital.feature.screenQuestion;
 
 public class UserAnswerValidatorResponseDTO {
 

@@ -1,4 +1,4 @@
-package com.example.apoiodigital.feature.usuario.data;
+package com.example.apoiodigital.feature.screenQuestion;
 
 import com.example.apoiodigital.feature.tutorial.data.TiposPendencia;
 

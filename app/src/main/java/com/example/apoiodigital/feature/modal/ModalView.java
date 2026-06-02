@@ -17,6 +17,9 @@ import com.example.apoiodigital.core.Utils.SessionManager;
 import com.example.apoiodigital.core.tables.usuario.UserViewModel;
 import com.example.apoiodigital.databinding.ModalLayoutBinding;
 import com.example.apoiodigital.core.tables.atalho.Atalho;
+import com.example.apoiodigital.feature.modal.viewmodel.AtalhoViewModel;
+import com.example.apoiodigital.feature.modal.viewmodel.AudioViewModel;
+import com.example.apoiodigital.feature.modal.viewmodel.RequisicaoViewModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +29,12 @@ import java.util.concurrent.TimeUnit;
 public class ModalView extends View {
 
     private final List<Atalho> atalhosCache = new ArrayList<>();
-    private final ModalViewModel viewModel;
+    private final AudioViewModel viewModel;
+
+    private final RequisicaoViewModel requisicaoViewModel;
+
+    private final AtalhoViewModel atalhoViewModel;
+
     private final UserViewModel userViewModel = new UserViewModel();
 
     private SessionManager sessionManager;
@@ -36,13 +44,16 @@ public class ModalView extends View {
 
     private String userID = null;
 
-    public ModalView(ModalViewModel viewModel, Context context, LayoutInflater inflater, ViewGroup root) {
+    public ModalView(AudioViewModel viewModel, Context context, LayoutInflater inflater, ViewGroup root, RequisicaoViewModel requisicaoViewModel, AtalhoViewModel atalhoViewModel) {
         super(context);
+
         this.viewModel = viewModel;
         this.context = context;
 
         this.sessionManager = new SessionManager(context);
         this.modalActivity = new ModalActivity(context);
+        this.requisicaoViewModel = requisicaoViewModel;
+        this.atalhoViewModel = atalhoViewModel;
 
         init(inflater, root);
     }
@@ -71,7 +82,7 @@ public class ModalView extends View {
 
             userID = userIDDTO.getUserID().toString();
 
-            viewModel.carregarAtalhos(userID);
+            atalhoViewModel.carregarAtalhos(userID);
             setViewObservers();
             setModalSettings(userID);
         });
@@ -79,8 +90,8 @@ public class ModalView extends View {
 
     public void setViewObservers() {
 
-        viewModel.getRequisicaoSendLoading().observeForever(isLoading -> {
-            if (isLoading) {
+        requisicaoViewModel.getState().observeForever(state -> {
+            if (state.isLoading()) {
                 binding.modalSubLayout.setVisibility(View.INVISIBLE);
                 binding.modalLoading.setVisibility(View.VISIBLE);
                 binding.voicePromptInput.setVisibility(View.INVISIBLE);
@@ -91,8 +102,8 @@ public class ModalView extends View {
             }
         });
 
-        viewModel.getIsAtalhosLoading().observeForever(isLoading -> {
-            if (isLoading) {
+        atalhoViewModel.getGetAtalhosState().observeForever(state -> {
+            if (state.isLoading()) {
                 binding.sugestoesRapidasSubLayout.setVisibility(View.INVISIBLE);
                 binding.sugestoesRapidasLoading.setVisibility(View.VISIBLE);
             } else {
@@ -101,8 +112,7 @@ public class ModalView extends View {
             }
         });
 
-        viewModel.getAtalhoResponse().observeForever(requisicao -> {
-            viewModel.getRequisicaoSendLoading().postValue(false);
+        atalhoViewModel.getAtalhoResponse().observeForever(requisicao -> {
 
             Intent i = new Intent("com.example.apoiodigital.SEND_TO_IA");
             i.putExtra("prompt", requisicao.getPrompt());
@@ -111,7 +121,7 @@ public class ModalView extends View {
             context.sendBroadcast(i);
         });
 
-        viewModel.getRequisicaoResponse().observeForever(resp -> {
+        requisicaoViewModel.getRequisicaoResponse().observeForever(resp -> {
 
             String pacoteApp = resp.getRequisicao().getAppSuportado().getPacote();
             String contextoTela = "O usuario acabou de abrir a o aplicativo ";
@@ -137,8 +147,6 @@ public class ModalView extends View {
                 }
             }
 
-
-
             Intent i = new Intent("com.example.apoiodigital.SEND_TO_IA");
             i.putExtra("prompt", resp.getRequisicao().getPrompt());
             i.putExtra("id_requisicao", resp.getRequisicao().getId());
@@ -153,7 +161,7 @@ public class ModalView extends View {
             context.sendBroadcast(i);
         });
 
-        viewModel.getAtalhos().observeForever(atalhos -> {
+        atalhoViewModel.getGetAtalhosResponse().observeForever(atalhos -> {
             viewModel.getIsAtalhosLoading().postValue(false);
 
             if (atalhos.size() >= 3) {
@@ -189,9 +197,9 @@ public class ModalView extends View {
                 binding.sugestoesRapidasBtn3
         );
 
-        modalActivity.setSugestoesRapidasBtn(sugestoesRapidasBtn, atalhosCache, viewModel);
+        modalActivity.setSugestoesRapidasBtn(sugestoesRapidasBtn, atalhosCache, atalhoViewModel);
 
-        modalActivity.setSendInputBtn(binding.sendPromptBtn, binding.promptInput, _userID, viewModel);
+        modalActivity.setSendInputBtn(binding.sendPromptBtn, binding.promptInput, _userID, requisicaoViewModel);
         modalActivity.setVoiceInputBtn(binding.voicePromptInput, viewModel);
     }
 }

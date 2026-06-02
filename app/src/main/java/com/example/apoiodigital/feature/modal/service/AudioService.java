@@ -13,8 +13,8 @@ import retrofit2.Call;
 
 public class AudioService {
 
-    private final ApiService apiService =
-            RetrofitClient.getSttRetrofitInstance().create(ApiService.class);
+    private final ModalApiService apiService =
+            RetrofitClient.getSttRetrofitInstance().create(ModalApiService.class);
 
     public Call<STTResponse> stt(File file) {
         RequestBody fileBody = RequestBody.create(file, MediaType.parse("audio/mp4"));

@@ -19,6 +19,9 @@ import com.example.apoiodigital.feature.Recorder.AudioRecorderInput;
 import com.example.apoiodigital.databinding.ModalLayoutBinding;
 import com.example.apoiodigital.core.tables.atalho.Atalho;
 import com.example.apoiodigital.feature.modal.data.RequisicaoInput;
+import com.example.apoiodigital.feature.modal.viewmodel.AtalhoViewModel;
+import com.example.apoiodigital.feature.modal.viewmodel.AudioViewModel;
+import com.example.apoiodigital.feature.modal.viewmodel.RequisicaoViewModel;
 
 import java.io.File;
 import java.util.List;
@@ -109,7 +112,7 @@ public class ModalActivity {
     }
 
 
-    public void setSugestoesRapidasBtn(List<Button> btns, List<Atalho> atalhos, ModalViewModel viewModel){
+    public void setSugestoesRapidasBtn(List<Button> btns, List<Atalho> atalhos, AtalhoViewModel viewModel){
         for(int i = 0; i < btns.size(); i++){
             int finalI = i;
             btns.get(i).setOnClickListener(new View.OnClickListener() {
@@ -123,7 +126,7 @@ public class ModalActivity {
         }
     }
 
-    public void setSendInputBtn(ImageButton btn, EditText input, String usuarioID, ModalViewModel viewModel){
+    public void setSendInputBtn(ImageButton btn, EditText input, String usuarioID, RequisicaoViewModel viewModel){
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -140,7 +143,7 @@ public class ModalActivity {
         });
     }
 
-    public void setVoiceInputBtn(ImageButton micBtn, ModalViewModel viewModel){
+    public void setVoiceInputBtn(ImageButton micBtn, AudioViewModel viewModel){
         micBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -154,7 +157,6 @@ public class ModalActivity {
                     Log.e("STTResponse", "onClick: " + audio.exists() );
 
                     viewModel.transformarAudioParaTexto(audio);
-
 
                     isPlaying = false;
 
