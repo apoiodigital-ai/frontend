@@ -6,7 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 
 import com.example.apoiodigital.R;
-import com.example.apoiodigital.feature.usuario.RegisterActivity;
+import com.example.apoiodigital.feature.register.RegisterActivity;
 import com.google.android.material.button.MaterialButton;
 
 public class WelcomeActivity extends BaseActivity {

@@ -14,9 +14,9 @@ import android.widget.Button;
 
 import com.example.apoiodigital.R;
 import com.example.apoiodigital.core.Utils.SessionManager;
-import com.example.apoiodigital.feature.usuario.UserViewModel;
+import com.example.apoiodigital.core.tables.usuario.UserViewModel;
 import com.example.apoiodigital.databinding.ModalLayoutBinding;
-import com.example.apoiodigital.feature.modal.data.Atalho;
+import com.example.apoiodigital.core.tables.atalho.Atalho;
 
 import java.util.ArrayList;
 import java.util.Arrays;

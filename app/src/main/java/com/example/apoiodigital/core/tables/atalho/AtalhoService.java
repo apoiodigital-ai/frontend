@@ -1,9 +1,8 @@
-package com.example.apoiodigital.feature.modal.service;
+package com.example.apoiodigital.core.tables.atalho;
 
 import com.example.apoiodigital.feature.api.ApiService;
 import com.example.apoiodigital.core.Network.RetrofitClient;
-import com.example.apoiodigital.feature.modal.data.Atalho;
-import com.example.apoiodigital.feature.modal.data.Requisicao;
+import com.example.apoiodigital.core.tables.requisicao.Requisicao;
 
 import java.util.List;
 

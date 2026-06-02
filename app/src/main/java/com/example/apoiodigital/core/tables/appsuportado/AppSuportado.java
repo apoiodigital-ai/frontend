@@ -1,4 +1,4 @@
-package com.example.apoiodigital.feature.modal.data;
+package com.example.apoiodigital.core.tables.appsuportado;
 
 public class AppSuportado {
 

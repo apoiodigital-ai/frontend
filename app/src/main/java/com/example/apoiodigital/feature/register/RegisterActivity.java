@@ -1,4 +1,4 @@
-package com.example.apoiodigital.feature.usuario;
+package com.example.apoiodigital.feature.register;
 
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
@@ -16,16 +16,18 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.apoiodigital.R;
-import com.example.apoiodigital.feature.usuario.data.Usuario;
+import com.example.apoiodigital.core.tables.usuario.UserViewModel;
+import com.example.apoiodigital.core.tables.usuario.Usuario;
 import com.example.apoiodigital.feature.lauch.BaseActivity;
 import com.example.apoiodigital.feature.lauch.WelcomeActivity;
 import com.example.apoiodigital.core.Utils.PhoneUtils;
 import com.example.apoiodigital.core.Utils.ValidationUtils;
+import com.example.apoiodigital.feature.login.LoginActivity;
 import com.google.android.material.button.MaterialButton;
 
 public class RegisterActivity extends BaseActivity {
 
-    private UserViewModel viewModel;
+    private RegisterViewModel viewModel;
     private EditText inputUsername, inputUserTel, inputUserSenha;
     private MaterialButton btnContinue, toLoginPageBtn;
     private TextView txtViewPasswordR, txtViewTelR, txtViewNameR, txtViewTitle;
@@ -34,7 +36,7 @@ public class RegisterActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        viewModel = new ViewModelProvider(this).get(RegisterViewModel.class);
 
         setContentView(R.layout.activity_register);
 

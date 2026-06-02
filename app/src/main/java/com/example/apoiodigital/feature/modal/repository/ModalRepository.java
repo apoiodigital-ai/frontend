@@ -1,13 +1,13 @@
 package com.example.apoiodigital.feature.modal.repository;
 
 import com.example.apoiodigital.feature.modal.service.AudioService;
-import com.example.apoiodigital.feature.modal.data.Atalho;
-import com.example.apoiodigital.feature.modal.data.Requisicao;
+import com.example.apoiodigital.core.tables.atalho.Atalho;
+import com.example.apoiodigital.core.tables.requisicao.Requisicao;
 import com.example.apoiodigital.feature.modal.data.RequisicaoInput;
 import com.example.apoiodigital.feature.modal.data.RequisicaoResponse;
 import com.example.apoiodigital.feature.modal.data.STTResponse;
-import com.example.apoiodigital.feature.modal.service.AtalhoService;
-import com.example.apoiodigital.feature.modal.service.RequisicaoService;
+import com.example.apoiodigital.core.tables.atalho.AtalhoService;
+import com.example.apoiodigital.core.tables.requisicao.RequisicaoService;
 
 import java.io.File;
 import java.util.List;

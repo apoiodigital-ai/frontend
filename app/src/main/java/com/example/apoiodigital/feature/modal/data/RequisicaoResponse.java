@@ -1,5 +1,7 @@
 package com.example.apoiodigital.feature.modal.data;
 
+import com.example.apoiodigital.core.tables.requisicao.Requisicao;
+
 public class RequisicaoResponse {
 
     private Requisicao requisicao;

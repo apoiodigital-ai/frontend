@@ -1,4 +1,4 @@
-package com.example.apoiodigital.feature.usuario;
+package com.example.apoiodigital.feature.login;
 
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
@@ -20,11 +20,12 @@ import com.example.apoiodigital.feature.lauch.MainActivity;
 import com.example.apoiodigital.core.Utils.PhoneUtils;
 import com.example.apoiodigital.core.Utils.SessionManager;
 import com.example.apoiodigital.core.Utils.ValidationUtils;
+import com.example.apoiodigital.feature.register.RegisterActivity;
 import com.google.android.material.button.MaterialButton;
 
 public class LoginActivity extends BaseActivity {
 
-    private UserViewModel viewModel;
+    private LoginViewModel viewModel;
     private EditText inputUserTel, inputUserSenha;
 
     private TextView txtViewTelL, txtViewPasswordL, txtViewTitle;
@@ -55,8 +56,6 @@ public class LoginActivity extends BaseActivity {
 
         btnContinue.setOnClickListener(v -> {
             txtViewPasswordL.setText("Use ao menos 8 caracteres, incluindo maiúsculas e minúsculas.");
-//            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-//            finish();
 
             boolean hasError = false;
 
@@ -91,7 +90,13 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void realizarLogin(String telefone, String senha){
-        viewModel = new UserViewModel();
+        viewModel = new LoginViewModel();
+
+        viewModel.getLoginState().observe(this, loginState -> { //TODO: Adaptar para este observer
+            if (loginState.isLoading()) {
+                Toast.makeText(this, "Realizando login...", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         viewModel.autenticar(telefone, senha).observe(this, tokenResponse -> {
 

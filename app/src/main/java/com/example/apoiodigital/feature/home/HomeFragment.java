@@ -19,7 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.apoiodigital.feature.modal.data.Requisicao;
+import com.example.apoiodigital.core.tables.requisicao.Requisicao;
 import com.example.apoiodigital.feature.modal.data.RequisicaoResponse;
 import com.example.apoiodigital.R;
 import com.example.apoiodigital.core.Utils.FontUtils;

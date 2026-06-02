@@ -1,4 +1,4 @@
-package com.example.apoiodigital.feature.modal.service;
+package com.example.apoiodigital.core.tables.requisicao;
 
 import com.example.apoiodigital.feature.api.ApiService;
 import com.example.apoiodigital.core.Network.RetrofitClient;

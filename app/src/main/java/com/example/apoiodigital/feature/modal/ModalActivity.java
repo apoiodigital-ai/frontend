@@ -17,7 +17,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.example.apoiodigital.R;
 import com.example.apoiodigital.feature.Recorder.AudioRecorderInput;
 import com.example.apoiodigital.databinding.ModalLayoutBinding;
-import com.example.apoiodigital.feature.modal.data.Atalho;
+import com.example.apoiodigital.core.tables.atalho.Atalho;
 import com.example.apoiodigital.feature.modal.data.RequisicaoInput;
 
 import java.io.File;

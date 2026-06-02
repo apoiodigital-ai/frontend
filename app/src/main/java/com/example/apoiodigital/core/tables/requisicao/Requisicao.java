@@ -1,4 +1,6 @@
-package com.example.apoiodigital.feature.modal.data;
+package com.example.apoiodigital.core.tables.requisicao;
+
+import com.example.apoiodigital.core.tables.appsuportado.AppSuportado;
 
 public class Requisicao {
 

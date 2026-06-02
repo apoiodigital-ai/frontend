@@ -9,15 +9,15 @@ import com.example.apoiodigital.feature.auth.data.TokenResponseDTO;
 import com.example.apoiodigital.feature.usuario.data.UserAnswerValidatorRequestDTO;
 import com.example.apoiodigital.feature.usuario.data.UserAnswerValidatorResponseDTO;
 import com.example.apoiodigital.feature.usuario.data.UserIDDTO;
-import com.example.apoiodigital.feature.modal.data.Atalho;
+import com.example.apoiodigital.core.tables.atalho.Atalho;
 import com.example.apoiodigital.feature.tutorial.data.ChecksInformationNeedsRequestDTO;
 import com.example.apoiodigital.feature.tutorial.data.ChecksInformationNeedsResponseDTO;
 import com.example.apoiodigital.feature.tutorial.data.FindBestAnswerRequestDTO;
-import com.example.apoiodigital.feature.modal.data.Requisicao;
+import com.example.apoiodigital.core.tables.requisicao.Requisicao;
 import com.example.apoiodigital.feature.modal.data.RequisicaoInput;
 import com.example.apoiodigital.feature.modal.data.RequisicaoResponse;
 import com.example.apoiodigital.feature.modal.data.STTResponse;
-import com.example.apoiodigital.feature.usuario.data.Usuario;
+import com.example.apoiodigital.core.tables.usuario.Usuario;
 
 import java.util.List;
 

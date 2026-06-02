@@ -9,7 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.apoiodigital.feature.tutorial.data.FindBestAnswerResponseDTO;
 import com.example.apoiodigital.feature.tutorial.data.FindBestAnswerRequestDTO;
 import com.example.apoiodigital.feature.tutorial.repository.TutorialRepository;
-import com.example.apoiodigital.feature.tutorial.service.RespostaService;
+import com.example.apoiodigital.core.tables.resposta.RespostaService;
 import com.google.gson.Gson;
 
 import retrofit2.Call;

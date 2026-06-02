@@ -2,7 +2,7 @@ package com.example.apoiodigital.feature.tutorial.repository;
 
 import com.example.apoiodigital.feature.tutorial.data.FindBestAnswerResponseDTO;
 import com.example.apoiodigital.feature.tutorial.data.FindBestAnswerRequestDTO;
-import com.example.apoiodigital.feature.tutorial.service.RespostaService;
+import com.example.apoiodigital.core.tables.resposta.RespostaService;
 
 import retrofit2.Call;
 
