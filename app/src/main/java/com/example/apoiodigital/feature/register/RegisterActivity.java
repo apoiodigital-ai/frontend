@@ -139,20 +139,30 @@ public class RegisterActivity extends BaseActivity {
     }
 
     private void cadastrar(String name, String telefone, String senha){
-        viewModel.registerUser(new Usuario(name, telefone, senha))
-                .observe(this, created -> {
-                    if (created) {
-                        Toast.makeText(this, "Usuário criado com sucesso!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-                        finish();
-                    } else {
-                        setErrorTelRegistered(txtViewTitle);
-                        Toast.makeText(this, "Erro ao criar usuário", Toast.LENGTH_SHORT).show();
-                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                            resetErrorTelRegistered(txtViewTitle);
-                        }, 10000);
-                    }
-                });
+
+        viewModel.registerUser(new Usuario(name, telefone, senha));
+
+        viewModel.getState().observe(this, registerState -> {
+            if(registerState.isLoading()){
+                Toast.makeText(this, "Realizando login...", Toast.LENGTH_SHORT).show();
+            }
+
+            if(registerState.isSuccess()){
+                Toast.makeText(this, "Usuário criado com sucesso!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                finish();
+            }
+
+            if(registerState.getErrorMessage() != null){
+                setErrorTelRegistered(txtViewTitle);
+                Toast.makeText(this, "Erro ao criar usuário", Toast.LENGTH_SHORT).show();
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    resetErrorTelRegistered(txtViewTitle);
+                }, 10000);
+            }
+
+        });
+
     }
 
 }

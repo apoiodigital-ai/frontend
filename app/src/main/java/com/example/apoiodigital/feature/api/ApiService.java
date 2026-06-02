@@ -38,10 +38,6 @@ public interface ApiService {
     @POST("usuario/salvar")
     Call<Usuario> criarConta(@Body Usuario usuario);
 
-    @POST("auth/login")
-    Call<TokenResponseDTO> autenticarUsuario(@Query("telefone") String telefone,
-                                             @Query("senha") String senha);
-
     @POST("auth/refresh")
     Call<AccessTokenDTO> refresh(@Body RefreshRequestDTO request);
 

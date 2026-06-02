@@ -13,28 +13,35 @@ import retrofit2.Response;
 
 public class RegisterRepository {
 
-    private ApiService apiService;
+    private RegisterApiService apiService;
 
     public RegisterRepository() {
-        apiService = RetrofitClient.getRetrofitInstance().create(ApiService.class);
+        apiService = RetrofitClient.getRetrofitInstance().create(RegisterApiService.class);
     }
 
-    public MutableLiveData<Boolean> createUser(Usuario usuario) {
+    public MutableLiveData<Boolean> createUser(Usuario usuario, RegisterCallBack callback) {
         MutableLiveData<Boolean> result = new MutableLiveData<>();
 
         apiService.criarConta(usuario).enqueue(new retrofit2.Callback<Usuario>() {
             @Override
             public void onResponse(Call<Usuario> call, Response<Usuario> response) {
                 result.setValue(response.isSuccessful());
+                callback.onSuccess();
             }
 
             @Override
             public void onFailure(Call<Usuario> call, Throwable t) {
                 result.setValue(false);
+                callback.onError("Erro ao criar usuário");
                 Log.e("UserRepository", "Erro ao criar usuário", t);
             }
         });
         return result;
+    }
+
+    public interface RegisterCallBack{
+        void onSuccess();
+        void onError(String error);
     }
 
 }
