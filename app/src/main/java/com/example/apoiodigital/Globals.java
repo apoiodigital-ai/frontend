@@ -2,7 +2,7 @@ package com.example.apoiodigital;
 
 public class Globals {
 
-    public String BaseUrl = "10.206.241.203";
+    public String BaseUrl = "192.168.0.106";
     public String MBaseUrl = "192.168.56.1";
     public String UserIDTest = "99ce9225-7f2f-4d38-8ca4-bb45670c9500";
 }

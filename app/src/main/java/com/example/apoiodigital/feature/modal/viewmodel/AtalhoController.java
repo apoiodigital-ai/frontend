@@ -1,7 +1,6 @@
 package com.example.apoiodigital.feature.modal.viewmodel;
 
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.example.apoiodigital.core.tables.atalho.Atalho;
 import com.example.apoiodigital.core.tables.requisicao.Requisicao;
@@ -11,7 +10,7 @@ import com.example.apoiodigital.feature.modal.state.InitAtalhoState;
 
 import java.util.List;
 
-public class AtalhoViewModel extends ViewModel {
+public class AtalhoController {
 
     private final AtalhoRepository atalhoRepository;
     private MutableLiveData<Requisicao> atalhoResponse = new MutableLiveData<>();
@@ -27,7 +26,7 @@ public class AtalhoViewModel extends ViewModel {
         return getAtalhosResponse;
     }
 
-    public AtalhoViewModel() {
+    public AtalhoController() {
         this.atalhoRepository = new AtalhoRepository();
     }
 

@@ -1,195 +1,79 @@
 package com.example.apoiodigital.feature.modal;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
+import android.graphics.Rect;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.apoiodigital.R;
 import com.example.apoiodigital.core.Utils.SessionManager;
-import com.example.apoiodigital.core.tables.usuario.UserViewModel;
+import com.example.apoiodigital.core.tables.usuario.UsuarioController;
 import com.example.apoiodigital.databinding.ModalLayoutBinding;
 import com.example.apoiodigital.core.tables.atalho.Atalho;
-import com.example.apoiodigital.feature.modal.viewmodel.AtalhoViewModel;
-import com.example.apoiodigital.feature.modal.viewmodel.AudioViewModel;
-import com.example.apoiodigital.feature.modal.viewmodel.RequisicaoViewModel;
+import com.example.apoiodigital.feature.Recorder.AudioRecorderInput;
+import com.example.apoiodigital.feature.modal.data.RequisicaoInput;
+import com.example.apoiodigital.feature.modal.viewmodel.AtalhoController;
+import com.example.apoiodigital.feature.modal.viewmodel.AudioController;
+import com.example.apoiodigital.feature.modal.viewmodel.RequisicaoController;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-public class ModalView extends View {
+public class ModalView extends FrameLayout {
 
     private final List<Atalho> atalhosCache = new ArrayList<>();
-    private final AudioViewModel viewModel;
-
-    private final RequisicaoViewModel requisicaoViewModel;
-
-    private final AtalhoViewModel atalhoViewModel;
-
-    private final UserViewModel userViewModel = new UserViewModel();
-
-    private SessionManager sessionManager;
     private Context context;
-    private ModalActivity modalActivity;
     private ModalLayoutBinding binding;
 
-    private String userID = null;
+    private Boolean isPlaying = false;
+    private final AudioRecorderInput recorder;
+    private final AudioController audioController;
+    private final AtalhoController atalhoController;
+    private final RequisicaoController requisicaoController;
 
-    public ModalView(AudioViewModel viewModel, Context context, LayoutInflater inflater, ViewGroup root, RequisicaoViewModel requisicaoViewModel, AtalhoViewModel atalhoViewModel) {
+    public ModalView(Context context, LayoutInflater inflater, ViewGroup root, AudioController audioController, AtalhoController atalhoController, RequisicaoController requisicaoController) {
         super(context);
 
-        this.viewModel = viewModel;
         this.context = context;
 
-        this.sessionManager = new SessionManager(context);
-        this.modalActivity = new ModalActivity(context);
-        this.requisicaoViewModel = requisicaoViewModel;
-        this.atalhoViewModel = atalhoViewModel;
+        recorder = new AudioRecorderInput(context);
+        this.audioController = audioController;
+        this.atalhoController = atalhoController;
+        this.requisicaoController = requisicaoController;
 
         init(inflater, root);
     }
 
     private void init(LayoutInflater inflater, ViewGroup root) {
-        var view = inflater.inflate(R.layout.modal_layout, root, true);
-        binding = ModalLayoutBinding.bind(view);
 
-        carregarUserID();
+        binding = ModalLayoutBinding.inflate(inflater, this, true);
+
     }
 
-    private void carregarUserID() {
-        String token = sessionManager.getAccessToken();
-
-        if (token == null || token.isEmpty()) {
-            Log.e("ModalView", "Token está vazio. Não é possível obter o userID.");
-            return;
-        }
-
-        userViewModel.getIdByToken(token).observeForever(userIDDTO -> {
-
-            if (userIDDTO == null || userIDDTO.getUserID() == null) {
-                Log.e("ModalView", "Erro: API retornou userIDDTO nulo!");
-                return;
-            }
-
-            userID = userIDDTO.getUserID().toString();
-
-            atalhoViewModel.carregarAtalhos(userID);
-            setViewObservers();
-            setModalSettings(userID);
-        });
+    public ModalLayoutBinding getBinding() {
+        return binding;
     }
 
-    public void setViewObservers() {
-
-        requisicaoViewModel.getState().observeForever(state -> {
-            if (state.isLoading()) {
-                binding.modalSubLayout.setVisibility(View.INVISIBLE);
-                binding.modalLoading.setVisibility(View.VISIBLE);
-                binding.voicePromptInput.setVisibility(View.INVISIBLE);
-            } else {
-                binding.modalLoading.setVisibility(View.INVISIBLE);
-                binding.modalSubLayout.setVisibility(View.VISIBLE);
-                binding.voicePromptInput.setVisibility(View.VISIBLE);
-            }
-        });
-
-        atalhoViewModel.getGetAtalhosState().observeForever(state -> {
-            if (state.isLoading()) {
-                binding.sugestoesRapidasSubLayout.setVisibility(View.INVISIBLE);
-                binding.sugestoesRapidasLoading.setVisibility(View.VISIBLE);
-            } else {
-                binding.sugestoesRapidasLoading.setVisibility(View.INVISIBLE);
-                binding.sugestoesRapidasSubLayout.setVisibility(View.VISIBLE);
-            }
-        });
-
-        atalhoViewModel.getAtalhoResponse().observeForever(requisicao -> {
-
-            Intent i = new Intent("com.example.apoiodigital.SEND_TO_IA");
-            i.putExtra("prompt", requisicao.getPrompt());
-            i.putExtra("id_requisicao", requisicao.getId());
-
-            context.sendBroadcast(i);
-        });
-
-        requisicaoViewModel.getRequisicaoResponse().observeForever(resp -> {
-
-            String pacoteApp = resp.getRequisicao().getAppSuportado().getPacote();
-            String contextoTela = "O usuario acabou de abrir a o aplicativo ";
-
-            PackageManager pm = context.getPackageManager();
-            Intent intent = pm.getLaunchIntentForPackage(pacoteApp);
-
-            if (intent != null) {
-                // O app está instalado, vamos abri-lo
-                context.startActivity(intent);
-                contextoTela += resp.getRequisicao().getAppSuportado().getNome() + " e segue esperando para o proximo passo";
-            } else {
-                // O app NÃO está instalado, vamos para a Play Store
-                try {
-                    // Tenta abrir diretamente pelo app da Play Store
-                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + pacoteApp)));
-                    contextoTela += "PlayStore. Ele precisa instalar o aplicativo " + resp.getRequisicao().getAppSuportado().getNome() + " primeiro";
-                } catch (ActivityNotFoundException e) {
-                    // Se a Play Store não estiver instalada, abre pelo navegador
-                    contextoTela += "Navegador no site da PlayStore. Ele precisa instalar o aplicativo " + resp.getRequisicao().getAppSuportado().getNome() + " primeiro";
-
-                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + pacoteApp)));
-                }
-            }
-
-            Intent i = new Intent("com.example.apoiodigital.SEND_TO_IA");
-            i.putExtra("prompt", resp.getRequisicao().getPrompt());
-            i.putExtra("id_requisicao", resp.getRequisicao().getId());
-            i.putExtra("contexto", contextoTela);
-
-            try {
-                TimeUnit.SECONDS.sleep(5);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-            context.sendBroadcast(i);
-        });
-
-        atalhoViewModel.getGetAtalhosResponse().observeForever(atalhos -> {
-            viewModel.getIsAtalhosLoading().postValue(false);
-
-            if (atalhos.size() >= 3) {
-                binding.sugestoesRapidasBtn.setText(atalhos.get(0).getTitulo());
-                binding.sugestoesRapidasBtn2.setText(atalhos.get(1).getTitulo());
-                binding.sugestoesRapidasBtn3.setText(atalhos.get(2).getTitulo());
-            }
-
-            atalhosCache.clear();
-            atalhosCache.addAll(atalhos);
-        });
-
-        viewModel.getSttReturn().observeForever(text ->
-                binding.promptInput.setText(text)
-        );
-    }
-
-    public void setModalSettings(String _userID) {
-
-        if (viewModel == null || _userID == null) {
-            Log.e("ModalView", "setModalSettings chamado sem userID carregado!");
-            return;
-        }
+    public void setModalSettings(String _userID, List<Atalho> atalhosCache) {
 
         var windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 
-        modalActivity.closeModal(binding, windowManager, context);
-        modalActivity.keyboardValidationActions(binding);
+        closeModal(binding, windowManager, context);
+        keyboardValidationActions(binding);
 
         List<Button> sugestoesRapidasBtn = Arrays.asList(
                 binding.sugestoesRapidasBtn,
@@ -197,9 +81,142 @@ public class ModalView extends View {
                 binding.sugestoesRapidasBtn3
         );
 
-        modalActivity.setSugestoesRapidasBtn(sugestoesRapidasBtn, atalhosCache, atalhoViewModel);
+        setSugestoesRapidasBtn(sugestoesRapidasBtn, atalhosCache, atalhoController);
 
-        modalActivity.setSendInputBtn(binding.sendPromptBtn, binding.promptInput, _userID, requisicaoViewModel);
-        modalActivity.setVoiceInputBtn(binding.voicePromptInput, viewModel);
+        setSendInputBtn(binding.sendPromptBtn, binding.promptInput, _userID, requisicaoController);
+        setVoiceInputBtn(binding.voicePromptInput, audioController);
+    }
+
+    public void keyboardValidationActions(ModalLayoutBinding binding){
+        View rootView = binding.getRoot().getRootView();
+        ConstraintLayout sugestoesRapidasLayout = binding.sugestoesRapidasLayout;
+
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            Rect auxRect = new Rect();
+            rootView.getWindowVisibleDisplayFrame(auxRect);
+
+            int screentHeight = rootView.getRootView().getHeight();
+            int actHeight = screentHeight - auxRect.bottom;
+
+
+            if(actHeight > screentHeight * 0.15){ // 15% 'e para margem de erro
+
+                rootView.setTranslationY((float) -actHeight /2);
+                sugestoesRapidasLayout.setVisibility(View.GONE);
+
+
+
+            }else{
+
+                rootView.setTranslationY((float) actHeight /2);
+                sugestoesRapidasLayout.setVisibility(View.VISIBLE);
+
+            }
+        });
+    }
+
+    public void closeModal(ModalLayoutBinding binding, WindowManager windowManager, Context context){
+        Animation outAnimation = AnimationUtils.loadAnimation(context, R.anim.out_modal_animation);
+
+        View viewToCloseModal = binding.viewToCloseModal;
+        viewToCloseModal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                outAnimation.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+
+                        windowManager.removeView(binding.getRoot().getRootView());
+//                        finishAffinity(activity);
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                });
+
+                binding.constraintLayout.startAnimation(outAnimation);
+                binding.voicePromptInput.startAnimation(outAnimation);
+
+            }
+        });
+    }
+
+    public void modalApperingAnimation(ConstraintLayout modal, ImageButton micButton, Context context){
+        Animation inAnimation = AnimationUtils.loadAnimation(context, R.anim.in_modal_animation);
+        modal.startAnimation(inAnimation);
+        micButton.startAnimation(inAnimation);
+    }
+
+
+    public void setSugestoesRapidasBtn(List<Button> btns, List<Atalho> atalhos, AtalhoController atalhoController){
+        for(int i = 0; i < btns.size(); i++){
+            int finalI = i;
+            btns.get(i).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    atalhoController.iniciarAtalho(atalhos.get(finalI).getId());
+
+                }
+            });
+        }
+    }
+
+    public void setSendInputBtn(ImageButton btn, EditText input, String usuarioID, RequisicaoController viewModel){
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                var prompt = input.getText().toString();
+                Log.e("VIEWMODEL", "onClick: " + prompt );
+                if(usuarioID == null) return;
+                if(prompt.isEmpty() || input.getText() == null) return;
+
+                var reqInput = new RequisicaoInput(prompt, usuarioID);
+                viewModel.enviarRequisicao(reqInput);
+                input.setText("");
+            }
+        });
+    }
+
+    public void setVoiceInputBtn(ImageButton micBtn, AudioController viewModel){
+        micBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                var filepath = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC).getAbsolutePath() + "/voice_input.mp4";
+
+                if(isPlaying){
+
+                    recorder.stop();
+
+                    File audio = new File(filepath);
+                    Log.e("STTResponse", "onClick: " + audio.exists() );
+
+                    viewModel.transformarAudioParaTexto(audio);
+
+                    isPlaying = false;
+
+                    micBtn.setImageResource(R.drawable.micbtn);
+
+                    return;
+
+                }
+
+                recorder.start(filepath);
+                isPlaying = true;
+                micBtn.setImageResource(R.drawable.recording_audio);
+            }
+        });
     }
 }

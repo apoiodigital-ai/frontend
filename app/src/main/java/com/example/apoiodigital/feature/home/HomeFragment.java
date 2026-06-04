@@ -20,24 +20,20 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.apoiodigital.core.tables.requisicao.Requisicao;
+import com.example.apoiodigital.feature.modal.AskHelpActivity;
 import com.example.apoiodigital.feature.modal.data.RequisicaoResponse;
 import com.example.apoiodigital.R;
 import com.example.apoiodigital.core.Utils.FontUtils;
 import com.example.apoiodigital.feature.modal.ModalView;
-import com.example.apoiodigital.feature.modal.viewmodel.AtalhoViewModel;
-import com.example.apoiodigital.feature.modal.viewmodel.RequisicaoViewModel;
+import com.example.apoiodigital.feature.modal.viewmodel.AtalhoController;
+import com.example.apoiodigital.feature.modal.viewmodel.RequisicaoController;
 import com.example.apoiodigital.feature.tutorial.TutorialView;
-import com.example.apoiodigital.feature.modal.viewmodel.AudioViewModel;
+import com.example.apoiodigital.feature.modal.viewmodel.AudioController;
 import com.example.apoiodigital.databinding.OverlayLayoutBinding;
 
 public class HomeFragment extends Fragment {
 
     private final Context _context;
-    private OverlayLayoutBinding binding;
-    private View mainOverlay;
-    private AudioViewModel viewModel;
-    private RequisicaoViewModel requisicaoViewModel;
-    private AtalhoViewModel atalhoViewModel;
 
     public HomeFragment(Context context) {
         _context = context;
@@ -49,95 +45,19 @@ public class HomeFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         FontUtils.applyFontSize(requireContext(), rootView);
-        viewModel = new ViewModelProvider(requireActivity()).get(AudioViewModel.class);
-        requisicaoViewModel = new ViewModelProvider(requireActivity()).get(RequisicaoViewModel.class);
-        atalhoViewModel = new ViewModelProvider(requireActivity()).get(AtalhoViewModel.class);
 
         var btnStart = rootView.findViewById(R.id.btnStartModal);
         btnStart.setOnClickListener(v -> {
 
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_HOME);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+//            Intent intent = new Intent(Intent.ACTION_MAIN);
+//            intent.addCategory(Intent.CATEGORY_HOME);
+//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(new Intent(_context, AskHelpActivity.class));
 
-            var windowManager = (WindowManager) _context.getSystemService(WINDOW_SERVICE);
-            WindowManager.LayoutParams params = getWindowParams();
-            LayoutInflater layoutInflater = LayoutInflater.from(_context);
-
-            mainOverlay = layoutInflater.inflate(R.layout.overlay_layout, null);
-            windowManager.addView(mainOverlay, params);
-
-            binding = OverlayLayoutBinding.bind(mainOverlay);
-
-            View modalController = new ModalView(viewModel, _context, layoutInflater, binding.container, requisicaoViewModel, atalhoViewModel);
-
-            binding.container.addView(modalController);
-
-            viewModel.getAtalhoResponse().observeForever(new Observer<Requisicao>() {
-                @Override
-                public void onChanged(Requisicao requisicao) {
-                    afterRequisicaoSent(windowManager, inflater);
-                }
-            });
-
-            requisicaoViewModel.getRequisicaoResponse().observeForever(new Observer<RequisicaoResponse>() {
-                @Override
-                public void onChanged(RequisicaoResponse requisicaoResponse) {
-                    afterRequisicaoSent(windowManager, inflater);
-                }
-            });
-//            viewModel.getAtalhoResponse().observe(getViewLifecycleOwner(), this::afterRequisicaoSent());
-//            viewModel.getRequisicaoResponse().observe(getViewLifecycleOwner(), this::afterRequisicaoSent);
         });
 
         return rootView;
+
     }
 
-    private void afterRequisicaoSent(WindowManager windowManager, LayoutInflater inflater) {
-//
-//        var windowManager = (WindowManager) _context.getSystemService(WINDOW_SERVICE);
-//        LayoutInflater inflater = LayoutInflater.from(_context);
-
-        try {
-            Log.e("FOWAOFWKAKFKWFW", "afterRequisicaoSent: AQUI NO COMECO DO TRY" );
-            windowManager.removeView(mainOverlay);
-            Log.e("FOWAOFWKAKFKWFW", "afterRequisicaoSent: AQUI NO COMECO DO TRY" );
-
-        } catch (Exception ignoredEx) {}
-
-        windowManager.addView(mainOverlay, getWindowParamsForTutorial());
-        Log.e("FOWAOFWKAKFKWFW", "afterRequisicaoSent: ADICIONOU " );
-
-        binding.container.removeAllViews();
-        View tutorialController = new TutorialView(_context, inflater, binding.container, windowManager);
-        binding.container.addView(tutorialController);
-    }
-
-    private WindowManager.LayoutParams getWindowParams() {
-        return new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT,
-                getOverlayType(),
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-                PixelFormat.TRANSLUCENT
-        );
-    }
-
-    private WindowManager.LayoutParams getWindowParamsForTutorial() {
-        return new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT,
-                getOverlayType(),
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
-                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSLUCENT
-        );
-    }
-
-    private int getOverlayType() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ?
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY :
-                WindowManager.LayoutParams.TYPE_PHONE;
-    }
 }

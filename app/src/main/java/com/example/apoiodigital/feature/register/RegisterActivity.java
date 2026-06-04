@@ -16,7 +16,7 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.apoiodigital.R;
-import com.example.apoiodigital.core.tables.usuario.UserViewModel;
+
 import com.example.apoiodigital.core.tables.usuario.Usuario;
 import com.example.apoiodigital.feature.lauch.BaseActivity;
 import com.example.apoiodigital.feature.lauch.WelcomeActivity;

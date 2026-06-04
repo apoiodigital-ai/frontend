@@ -1,7 +1,6 @@
 package com.example.apoiodigital.feature.modal.viewmodel;
 
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.example.apoiodigital.feature.modal.repository.AudioRepository;
 import com.example.apoiodigital.feature.modal.service.AudioService;
@@ -13,7 +12,7 @@ import com.example.apoiodigital.feature.modal.state.AudioState;
 import java.io.File;
 import java.util.List;
 
-public class AudioViewModel extends ViewModel {
+public class AudioController {
 
     private final AudioService audioService = new AudioService();
     private final AudioRepository audioRepository = new AudioRepository();

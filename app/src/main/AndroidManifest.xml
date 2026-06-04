@@ -7,6 +7,11 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
     <queries>
         <intent>
@@ -83,7 +88,14 @@
             android:name=".feature.history.HistoryResponseActivity"
             android:exported="true">
         </activity>
-
+        <activity android:name=".feature.modal.AskHelpActivity"/>
+            <service android:name=".feature.modal.service.OverlayService"
+            android:enabled="true"
+            android:exported="false"
+                android:foregroundServiceType="mediaPlayback|dataSync|microphone|specialUse">
+                <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                    android:value="O aplicativo é um Assistente virtual que requer botões flutuantes (Overlay) persistente para que o usuário possa interagir com os aplicativos." />
+            </service>
         <service
             android:name=".feature.AccessibilityService.GetElementService"
             android:exported="true"

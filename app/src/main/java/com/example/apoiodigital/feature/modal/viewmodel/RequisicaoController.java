@@ -8,7 +8,7 @@ import com.example.apoiodigital.feature.modal.data.RequisicaoResponse;
 import com.example.apoiodigital.feature.modal.repository.RequisicaoRepository;
 import com.example.apoiodigital.feature.modal.state.RequisicaoState;
 
-public class RequisicaoViewModel extends ViewModel {
+public class RequisicaoController extends ViewModel {
 
     private final RequisicaoRepository requisicaoRepository;
     private MutableLiveData<RequisicaoResponse> requisicaoResponse = new MutableLiveData<>();
@@ -22,7 +22,7 @@ public class RequisicaoViewModel extends ViewModel {
         return state;
     }
 
-    public RequisicaoViewModel() {
+    public RequisicaoController() {
         this.requisicaoRepository = new RequisicaoRepository();
     }
 

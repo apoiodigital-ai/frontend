@@ -27,7 +27,7 @@ public class UserRepository {
     }
 
 
-    public MutableLiveData<UserIDDTO> getUserIDByToken(String token){
+    public MutableLiveData<UserIDDTO> getUserIDByToken(String token, GetTokenCallBack callback){
         MutableLiveData<UserIDDTO> result = new MutableLiveData<>();
 
         fastApiService.pegarUsuarioIdPorToken(token).enqueue(new Callback<UserIDDTO>() {
@@ -35,17 +35,24 @@ public class UserRepository {
             public void onResponse(Call<UserIDDTO> call, Response<UserIDDTO> response) {
                 if(response.isSuccessful() && response.body()!= null){
                     result.setValue(response.body());
-                    Log.d("UserRepository", "ID recebido.");
+                    callback.onSuccess(response.body());
+                }else {
+                    callback.onError("Erro ao buscar token");
                 }
             }
 
             @Override
             public void onFailure(Call<UserIDDTO> call, Throwable t) {
                 result.setValue(null);
-                Log.d("UserRepository", "ID não foi recebido.");
+                callback.onError("Erro ao buscar token");
             }
         });
 
         return result;
+    }
+
+    public interface GetTokenCallBack{
+        void onSuccess(UserIDDTO response);
+        void onError(String error);
     }
 }

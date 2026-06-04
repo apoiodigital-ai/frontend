@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
@@ -19,9 +20,16 @@ import com.example.apoiodigital.databinding.TuturialLayoutBinding;
 import com.example.apoiodigital.feature.tutorial.data.Bounds;
 import com.google.gson.Gson;
 
-public class TutorialView extends View{
+public class TutorialView extends FrameLayout {
 
     private ConstraintSet respostaConstraint = new ConstraintSet();
+
+    private MaskView mask;
+    private final Context context;
+    private final WindowManager windowManager;
+
+    private TuturialLayoutBinding binding;
+
 
     private final BroadcastReceiver receiverBounds = new BroadcastReceiver() {
         @Override
@@ -69,17 +77,12 @@ public class TutorialView extends View{
         }
     };
 
-    private MaskView mask;
-    private final Context context;
-    private final WindowManager windowManager;
 
-    private TuturialLayoutBinding binding;
-
-    public TutorialView(Context context, LayoutInflater inflater, ViewGroup root, WindowManager windowManager) {
+    public TutorialView(Context context, LayoutInflater inflater, ViewGroup root) {
         super(context);
 
         this.context = context;
-        this.windowManager = windowManager;
+        this.windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("com.example.apoiodigital.SET_MASK_VIEW");
@@ -87,12 +90,8 @@ public class TutorialView extends View{
             context.registerReceiver(receiverBounds, intentFilter, context.RECEIVER_EXPORTED);
         }
 
-
-//        context.sendBroadcast(new Intent("com.example.apoiodigital.SEND_TO_IA"));
-
         init(inflater, root);
 
-        var activity = new TutorialActivity();
 
         binding.closeBtn.setOnClickListener(new OnClickListener() {
             @Override
