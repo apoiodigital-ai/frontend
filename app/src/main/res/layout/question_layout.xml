@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/backgroundcolor_modal">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:animateLayoutChanges="true"
+        android:clickable="true"
+        android:focusable="true"
+        android:id="@+id/containerBox"
+        app:layout_constraintWidth_percent=".8"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/question_background"
+        android:paddingVertical="30sp"
+        android:paddingHorizontal="25sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+
+        <TextView
+            app:layout_constraintBottom_toTopOf="@id/optionsContainer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:id="@+id/titleText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Temos muitas opções! Qual tipo de comida você deseja?"
+            android:textAlignment="center"
+            android:fontFamily="@font/utendobold"
+            android:textSize="27sp"
+            android:layout_marginBottom="20sp"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/optionsContainer"
+            app:layout_constraintTop_toBottomOf="@id/titleText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/inputsContainer">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/firstButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginVertical="10dp"
+                android:background="@drawable/basic_button_blue_version2"
+                android:backgroundTint="@null"
+                android:fontFamily="@font/utendobold"
+                android:paddingVertical="20dp"
+                android:text="Japonesa"
+                android:textAllCaps="false"
+                android:textColor="@color/LightBlueAD"
+                android:textSize="26sp"
+                app:layout_constraintBottom_toTopOf="@id/secondButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/secondButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/basic_button_blue_version2"
+                android:backgroundTint="@null"
+                android:fontFamily="@font/utendobold"
+                android:paddingVertical="20dp"
+                android:text="Shawarma"
+                android:textAllCaps="false"
+                android:textColor="@color/LightBlueAD"
+                android:textSize="26sp"
+                app:layout_constraintBottom_toTopOf="@id/changeOptionsContainer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/firstButton" />
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/changeOptionsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/secondButton"
+                android:layout_marginVertical="15sp">
+
+                <ImageButton
+                    android:id="@+id/backButton"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/setaArredondada"
+                    android:backgroundTint="@null"
+                    android:background="@android:color/transparent"
+                    android:rotationY="180"
+                    app:layout_constraintStart_toStartOf="parent"
+                    />
+
+                <LinearLayout
+                    android:id="@+id/optionsCounterContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_centerInParent="true"/>
+
+                <ImageButton
+                    android:id="@+id/nextButton"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/setaArredondada"
+                    android:backgroundTint="@null"
+                    android:background="@android:color/transparent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    />
+
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/inputsContainer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/optionsContainer"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/writingInputContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/promptInput"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="60sp"
+                    android:autofillHints="Campo de texto para o prompt"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:background="@drawable/prompt_input_background2"
+                    android:hint="Escreva aqui"
+                    android:paddingStart="15sp"
+                    android:paddingEnd="60sp"
+                    android:paddingVertical="10sp"
+                    android:textColor="#127BF3"
+                    android:textColorHint="#509BF2"
+                    android:fontFamily="@font/utendobold"
+                    android:textSize="20sp"
+                    android:maxLines="1"
+                    />
+
+                <ImageButton
+                    android:id="@+id/sendPromptBtn"
+                    android:layout_width="40sp"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="Enviar pergunta"
+                    android:src="@drawable/sendbtn"
+                    android:background="@android:color/transparent"
+                    android:scaleType="fitXY"
+                    android:adjustViewBounds="true"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginRight="20dp" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <ImageButton
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/writingInputContainer"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="60sp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/micbtn"
+                android:background="@drawable/voice_input_background2"
+                android:padding="12sp"
+                android:layout_marginTop="10sp"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

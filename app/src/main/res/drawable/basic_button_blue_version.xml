@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Camada 1 (Fundo): Cria o efeito da borda inferior mais grossa (sombra/lip 3D) -->
+    <item>
+        <shape android:shape="rectangle">
+            <!-- Cor azul vibrante da borda -->
+            <solid android:color="@color/LightBlueAD" />
+            <!-- Arredondamento dos cantos -->
+            <corners android:radius="16dp" />
+        </shape>
+    </item>
+
+    <!-- Camada 2 (Frente): Fundo branco com borda normal -->
+    <!-- O atributo android:bottom="4dp" desloca essa camada para cima,
+         revelando 4dp da camada azul abaixo, criando o efeito 3D -->
+    <item android:bottom="4dp">
+        <shape android:shape="rectangle">
+            <!-- Fundo interno branco -->
+            <solid android:color="#FFFFFF" />
+
+            <!-- Borda fina azul para o topo e laterais -->
+            <stroke
+                android:width="2dp"
+                android:color="@color/LightBlueAD" />
+
+            <!-- O arredondamento deve ser igual ao da camada de fundo -->
+            <corners android:radius="16dp" />
+        </shape>
+    </item>
+
+</layer-list>
