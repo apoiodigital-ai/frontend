@@ -1,4 +1,4 @@
-package com.example.apoiodigital.feature.modal.service;
+package com.example.apoiodigital.feature.overlay;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -23,6 +23,8 @@ import com.example.apoiodigital.databinding.ModalLayoutBinding;
 import com.example.apoiodigital.databinding.OverlayLayoutBinding;
 import com.example.apoiodigital.databinding.TuturialLayoutBinding;
 import com.example.apoiodigital.feature.modal.ModalView;
+import com.example.apoiodigital.feature.modal.service.OpenAppService;
+import com.example.apoiodigital.feature.modal.service.TokenService;
 import com.example.apoiodigital.feature.modal.viewmodel.AtalhoController;
 import com.example.apoiodigital.feature.modal.viewmodel.AudioController;
 import com.example.apoiodigital.feature.modal.viewmodel.RequisicaoController;

@@ -1,4 +1,4 @@
-package com.example.apoiodigital.feature.modal.service;
+package com.example.apoiodigital.feature.overlay;
 
 import android.graphics.PixelFormat;
 import android.os.Build;

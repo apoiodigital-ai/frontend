@@ -3,32 +3,13 @@ package com.example.apoiodigital.feature.modal;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.provider.Settings;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.ViewModelProvider;
 
-import com.example.apoiodigital.R;
-import com.example.apoiodigital.core.tables.atalho.Atalho;
-import com.example.apoiodigital.core.tables.usuario.UsuarioController;
-import com.example.apoiodigital.databinding.ModalLayoutBinding;
-import com.example.apoiodigital.databinding.OverlayLayoutBinding;
 import com.example.apoiodigital.feature.lauch.BaseActivity;
-import com.example.apoiodigital.feature.modal.data.RequisicaoInput;
-import com.example.apoiodigital.feature.modal.service.OverlayService;
-import com.example.apoiodigital.feature.modal.service.TokenService;
-import com.example.apoiodigital.feature.modal.service.WindowManagerService;
-import com.example.apoiodigital.feature.tutorial.TutorialView;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.example.apoiodigital.feature.overlay.OverlayService;
 
 public class AskHelpActivity extends BaseActivity {
 

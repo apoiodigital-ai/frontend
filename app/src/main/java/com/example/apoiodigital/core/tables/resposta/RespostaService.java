@@ -24,7 +24,4 @@ public class RespostaService {
         return apiService.validarNecessidadeInformacoes(requestDTO);
     }
 
-    public Call<UserAnswerValidatorResponseDTO> validarRespostaDaNecessidade(UserAnswerValidatorRequestDTO request) {
-        return apiService.validarRespostaDaNecessidade(request);
-    }
 }

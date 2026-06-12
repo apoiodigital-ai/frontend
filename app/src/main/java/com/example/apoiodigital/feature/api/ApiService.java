@@ -63,10 +63,6 @@ public interface ApiService {
     Call<ChecksInformationNeedsResponseDTO> validarNecessidadeInformacoes(
             @Body ChecksInformationNeedsRequestDTO requestDTO);
 
-    @POST("validar/respostra-necessidade")
-    Call<UserAnswerValidatorResponseDTO> validarRespostaDaNecessidade(
-            @Body UserAnswerValidatorRequestDTO request
-    );
 
     // ── Atalho ────────────────────────────────────────────────────────────────
 

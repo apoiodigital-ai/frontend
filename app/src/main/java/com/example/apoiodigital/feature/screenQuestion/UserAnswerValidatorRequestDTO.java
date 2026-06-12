@@ -10,4 +10,12 @@ public class UserAnswerValidatorRequestDTO {
     TiposPendencia tipo_dependencia;
     String descricao_duvida;
 
+    public UserAnswerValidatorRequestDTO(String contexto, String pergunta, String resposta_escrita, TiposPendencia tipo_dependencia, String descricao_duvida) {
+        this.contexto = contexto;
+        this.pergunta = pergunta;
+        this.resposta_escrita = resposta_escrita;
+        this.tipo_dependencia = tipo_dependencia;
+        this.descricao_duvida = descricao_duvida;
+    }
+
 }

@@ -89,7 +89,7 @@
             android:exported="true">
         </activity>
         <activity android:name=".feature.modal.AskHelpActivity"/>
-            <service android:name=".feature.modal.service.OverlayService"
+            <service android:name=".feature.overlay.OverlayService"
             android:enabled="true"
             android:exported="false"
                 android:foregroundServiceType="mediaPlayback|dataSync|microphone|specialUse">

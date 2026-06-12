@@ -15,7 +15,6 @@ import android.widget.FrameLayout;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
-import com.example.apoiodigital.R;
 import com.example.apoiodigital.databinding.TuturialLayoutBinding;
 import com.example.apoiodigital.feature.tutorial.data.Bounds;
 import com.google.gson.Gson;
