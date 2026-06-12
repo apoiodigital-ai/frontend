@@ -20,7 +20,7 @@ import com.example.apoiodigital.databinding.TuturialLayoutBinding;
 import com.example.apoiodigital.feature.tutorial.data.Bounds;
 import com.google.gson.Gson;
 
-public class TutorialView extends FrameLayout {
+public class TutorialView extends FrameLayout { //TODO: fix elements position calculation
 
     private ConstraintSet respostaConstraint = new ConstraintSet();
 
@@ -29,6 +29,9 @@ public class TutorialView extends FrameLayout {
     private final WindowManager windowManager;
 
     private TuturialLayoutBinding binding;
+
+    private int height;
+    private int width;
 
 
     private final BroadcastReceiver receiverBounds = new BroadcastReceiver() {
@@ -51,7 +54,7 @@ public class TutorialView extends FrameLayout {
 
             respostaContainer.post(() -> {
 
-                if(bounds.getBottom() > getHeight()/2){ // esta na parte de baixo
+                if(bounds.getBottom() > height/2){ // esta na parte de baixo
 
 //                    respostaConstraint.connect(respostaContainer.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP);
                     layoutParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
@@ -84,6 +87,16 @@ public class TutorialView extends FrameLayout {
         this.context = context;
         this.windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 
+        // Ensure TutorialView itself fills the parent (which is a ConstraintLayout in OverlayService)
+        ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.MATCH_PARENT);
+        lp.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+        lp.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
+        lp.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
+        lp.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
+        this.setLayoutParams(lp);
+
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("com.example.apoiodigital.SET_MASK_VIEW");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -97,8 +110,10 @@ public class TutorialView extends FrameLayout {
             @Override
             public void onClick(View view) {
                 Log.e("ANIVAPAFPWAFW", "onClick: CLICOU CLICOU" );
-                windowManager.removeView(binding.getRoot());
-
+                // Fix: Remove the top-level overlay view from WindowManager
+                if (getRootView() != null) {
+                    windowManager.removeView(getRootView());
+                }
             }
         });
 
@@ -111,8 +126,9 @@ public class TutorialView extends FrameLayout {
     }
 
     private void init(LayoutInflater inflater, ViewGroup root){
-        var view = inflater.inflate(R.layout.tuturial_layout, root, true);
-        binding = TuturialLayoutBinding.bind(view);
+
+        binding = TuturialLayoutBinding.inflate(inflater, this, true);
+
         mask = binding.mask;
         mask.setContext(context);
         mask.setBinding(binding);
@@ -126,12 +142,12 @@ public class TutorialView extends FrameLayout {
             var deltaY = bounds.getBottom() - bounds.getTop();
 
 //            Log.e("CryptServiceLOGE", "setArrowPosition > deltaX " + deltaX );
-            Log.e("CryptServiceLOGE", "setArrowPosition > h/2 " + getHeight()/2 );
+            Log.e("CryptServiceLOGE", "setArrowPosition > h/2 " + height/2 );
 
 
-            if( deltaX <= (getWidth()/3) ) {
+            if( deltaX <= (width/3) ) {
 
-                if( bounds.getLeft() < (getWidth()/2) ){ // apontando para esquerda
+                if( bounds.getLeft() < (width/2) ){ // apontando para esquerda
 
                     Log.e("CryptServiceLOGE", "setArrowPosition: apontando para esquerda" );
                     binding.setaImg.setX(bounds.getRight());
@@ -151,9 +167,9 @@ public class TutorialView extends FrameLayout {
 
             }
 
-            if( deltaY <= (getHeight()/3) ) {
+            if( deltaY <= (height/3) ) {
 
-                if( bounds.getTop() < (getHeight()/2) ) { // seta apontando para cima
+                if( bounds.getTop() < (height/2) ) { // seta apontando para cima
 
 //                    bottom = bounds.getTop();
                     Log.e("CryptServiceLOGE", "setArrowPosition: apontando para cima" );
@@ -176,7 +192,11 @@ public class TutorialView extends FrameLayout {
         });
     }
 
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
 
-
-
+        height = h;
+        width = w;
+    }
 }

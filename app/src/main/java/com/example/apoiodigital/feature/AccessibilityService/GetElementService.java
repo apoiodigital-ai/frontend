@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -111,17 +113,15 @@ public class GetElementService extends AccessibilityService {
                 chosedComponent.performAction(AccessibilityNodeInfo.ACTION_CLICK);
             }
 
-            try {
-                TimeUnit.SECONDS.sleep(3);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                var intentSendToIA = new Intent("com.example.apoiodigital.SEND_TO_IA");
+                intentSendToIA.putExtra("requisicao", promptCache);
+                intentSendToIA.putExtra("contexto", contextoCache);
+                sendBroadcast(intentSendToIA);
 
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            }, 3000); // 3000 milissegundos = 3 segundos
 
-            var intentSendToIA = new Intent("com.example.apoiodigital.SEND_TO_IA");
-            intentSendToIA.putExtra("requisicao", promptCache);
-            intentSendToIA.putExtra("contexto", contextoCache);
-            sendBroadcast(intentSendToIA);
+
 
         }
     };

@@ -16,19 +16,24 @@ public class OpenAppService {
 
         if (intent != null) {
             // O app está instalado, vamos abri-lo
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
             contextoTela += nomeApp + " e segue esperando para o proximo passo";
         } else {
             // O app NÃO está instalado, vamos para a Play Store
             try {
                 // Tenta abrir diretamente pelo app da Play Store
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + pacoteApp)));
+                Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + pacoteApp));
+                marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(marketIntent);
                 contextoTela += "PlayStore. Ele precisa instalar o aplicativo " + nomeApp + " primeiro";
             } catch (ActivityNotFoundException e) {
                 // Se a Play Store não estiver instalada, abre pelo navegador
                 contextoTela += "Navegador no site da PlayStore. Ele precisa instalar o aplicativo " + nomeApp + " primeiro";
 
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + pacoteApp)));
+                Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + pacoteApp));
+                webIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(webIntent);
             }
         }
 

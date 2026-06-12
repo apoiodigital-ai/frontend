@@ -62,6 +62,8 @@ public class OverlayService extends LifecycleService {
         audioController = new AudioController();
         usuarioController = new UsuarioController();
 
+        carregarUserID();
+
         windowManagerService = new WindowManagerService();
 
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
@@ -73,15 +75,12 @@ public class OverlayService extends LifecycleService {
 
         overlayLayoutBinding = OverlayLayoutBinding.bind(mainOverlay);
 
+
         modalView = new ModalView(this, layoutInflater, overlayLayoutBinding.container, audioController, atalhoController, requisicaoController);
 
         overlayLayoutBinding.container.addView(modalView);
 
         modalBinding = modalView.getBinding();
-
-        modalView.setModalSettings(userID, atalhosCache);
-
-        carregarUserID();
 
         setupObservers();
     }
@@ -130,9 +129,9 @@ public class OverlayService extends LifecycleService {
         });
 
         requisicaoController.getRequisicaoResponse().observeForever(resp -> {
-            abrirAplicativo(resp.getRequisicao());
+            String contexto = abrirAplicativoERetornarContexto(resp.getRequisicao());
 
-            enviarDadosParaIA(resp.getRequisicao().getPrompt(), resp.getRequisicao().getId());
+            enviarDadosParaIA(resp.getRequisicao().getPrompt(), resp.getRequisicao().getId(), contexto);
 
         });
 
@@ -151,9 +150,9 @@ public class OverlayService extends LifecycleService {
 
         atalhoController.getAtalhoResponse().observeForever(requisicao -> {
 
-            abrirAplicativo(requisicao);
+            String contexto = abrirAplicativoERetornarContexto(requisicao);
 
-            enviarDadosParaIA(requisicao.getPrompt(), requisicao.getId());
+            enviarDadosParaIA(requisicao.getPrompt(), requisicao.getId(), contexto);
 
         });
 
@@ -188,6 +187,8 @@ public class OverlayService extends LifecycleService {
 
             this.userID = userIDDTO.getUserID().toString();
             atalhoController.carregarAtalhos(userID);
+            modalView.setModalSettings(userID, atalhosCache);
+
 
         });
     }
@@ -221,27 +222,27 @@ public class OverlayService extends LifecycleService {
         overlayLayoutBinding.container.addView(tutorialView);
     }
 
-    private void enviarDadosParaIA(String prompt, String id_requisicao){
+    private void enviarDadosParaIA(String prompt, String id_requisicao, String contexto){
 
 
         Intent i = new Intent("com.example.apoiodigital.SEND_TO_IA");
         i.putExtra("prompt", prompt);
         i.putExtra("id_requisicao", id_requisicao);
+        i.putExtra("contexto", contexto);
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             sendBroadcast(i);
         }, 3000); // 3000 milissegundos = 3 segundos
 
-        sendBroadcast(i);
 
     }
 
-    private void abrirAplicativo(Requisicao requisicao){
+    private String abrirAplicativoERetornarContexto(Requisicao requisicao){
         String pacoteApp = requisicao.getAppSuportado().getPacote();
         String nomeApp = requisicao.getAppSuportado().getNome();
 
         OpenAppService openAppService = new OpenAppService();
-        openAppService.openAppByPacoteAndReturnsContexto(this, pacoteApp, nomeApp);
+        return openAppService.openAppByPacoteAndReturnsContexto(this, pacoteApp, nomeApp);
 
     }
 

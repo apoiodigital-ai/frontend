@@ -1,5 +1,7 @@
 package com.example.apoiodigital.feature.modal;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Environment;
@@ -36,7 +38,7 @@ import java.util.List;
 public class ModalView extends FrameLayout {
 
     private final List<Atalho> atalhosCache = new ArrayList<>();
-    private Context context;
+    private final Context context;
     private ModalLayoutBinding binding;
 
     private Boolean isPlaying = false;
@@ -70,9 +72,9 @@ public class ModalView extends FrameLayout {
 
     public void setModalSettings(String _userID, List<Atalho> atalhosCache) {
 
-        var windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 
-        closeModal(binding, windowManager, context);
+        closeModal(binding, windowManager);
         keyboardValidationActions(binding);
 
         List<Button> sugestoesRapidasBtn = Arrays.asList(
@@ -115,8 +117,8 @@ public class ModalView extends FrameLayout {
         });
     }
 
-    public void closeModal(ModalLayoutBinding binding, WindowManager windowManager, Context context){
-        Animation outAnimation = AnimationUtils.loadAnimation(context, R.anim.out_modal_animation);
+    public void closeModal(ModalLayoutBinding binding, WindowManager windowManager){
+        Animation outAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.out_modal_animation);
 
         View viewToCloseModal = binding.viewToCloseModal;
         viewToCloseModal.setOnClickListener(new View.OnClickListener() {
@@ -152,14 +154,7 @@ public class ModalView extends FrameLayout {
         });
     }
 
-    public void modalApperingAnimation(ConstraintLayout modal, ImageButton micButton, Context context){
-        Animation inAnimation = AnimationUtils.loadAnimation(context, R.anim.in_modal_animation);
-        modal.startAnimation(inAnimation);
-        micButton.startAnimation(inAnimation);
-    }
-
-
-    public void setSugestoesRapidasBtn(List<Button> btns, List<Atalho> atalhos, AtalhoController atalhoController){
+    public void setSugestoesRapidasBtn(List<Button> btns, List<Atalho> atalhos, AtalhoController atalhoController){ //TODO: fix init Atalho feature
         for(int i = 0; i < btns.size(); i++){
             int finalI = i;
             btns.get(i).setOnClickListener(new View.OnClickListener() {
@@ -194,7 +189,7 @@ public class ModalView extends FrameLayout {
         micBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                var filepath = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC).getAbsolutePath() + "/voice_input.mp4";
+                var filepath = getContext().getExternalFilesDir(Environment.DIRECTORY_MUSIC).getAbsolutePath() + "/voice_input.mp4";
 
                 if(isPlaying){
 
