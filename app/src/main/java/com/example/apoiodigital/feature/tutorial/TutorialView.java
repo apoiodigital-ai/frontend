@@ -80,7 +80,7 @@ public class TutorialView extends FrameLayout { //TODO: fix elements position ca
     };
 
 
-    public TutorialView(Context context, LayoutInflater inflater, ViewGroup root) {
+    public TutorialView(Context context) {
         super(context);
 
         this.context = context;
@@ -102,7 +102,7 @@ public class TutorialView extends FrameLayout { //TODO: fix elements position ca
             context.registerReceiver(receiverBounds, intentFilter, context.RECEIVER_EXPORTED);
         }
 
-        init(inflater, root);
+        init();
 
 
         binding.closeBtn.setOnClickListener(new OnClickListener() {
@@ -124,9 +124,9 @@ public class TutorialView extends FrameLayout { //TODO: fix elements position ca
         context.unregisterReceiver(receiverBounds);
     }
 
-    private void init(LayoutInflater inflater, ViewGroup root){
+    private void init(){
 
-        binding = TuturialLayoutBinding.inflate(inflater, this, true);
+        binding = TuturialLayoutBinding.inflate(LayoutInflater.from(context), this, true);
 
         mask = binding.mask;
         mask.setContext(context);

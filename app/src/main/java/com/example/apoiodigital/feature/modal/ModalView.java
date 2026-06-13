@@ -37,32 +37,23 @@ import java.util.List;
 
 public class ModalView extends FrameLayout {
 
-    private final List<Atalho> atalhosCache = new ArrayList<>();
+
     private final Context context;
     private ModalLayoutBinding binding;
 
-    private Boolean isPlaying = false;
-    private final AudioRecorderInput recorder;
-    private final AudioController audioController;
-    private final AtalhoController atalhoController;
-    private final RequisicaoController requisicaoController;
+    private ModalListener modalListener;
 
-    public ModalView(Context context, LayoutInflater inflater, ViewGroup root, AudioController audioController, AtalhoController atalhoController, RequisicaoController requisicaoController) {
+    public ModalView(Context context) {
         super(context);
 
         this.context = context;
 
-        recorder = new AudioRecorderInput(context);
-        this.audioController = audioController;
-        this.atalhoController = atalhoController;
-        this.requisicaoController = requisicaoController;
-
-        init(inflater, root);
+        init();
     }
 
-    private void init(LayoutInflater inflater, ViewGroup root) {
+    private void init() {
 
-        binding = ModalLayoutBinding.inflate(inflater, this, true);
+        binding = ModalLayoutBinding.inflate(LayoutInflater.from(context), this, true);
 
     }
 
@@ -70,23 +61,21 @@ public class ModalView extends FrameLayout {
         return binding;
     }
 
-    public void setModalSettings(String _userID, List<Atalho> atalhosCache) {
+    public void setModalSettings() {
 
         WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 
         closeModal(binding, windowManager);
         keyboardValidationActions(binding);
 
-        List<Button> sugestoesRapidasBtn = Arrays.asList(
-                binding.sugestoesRapidasBtn,
-                binding.sugestoesRapidasBtn2,
-                binding.sugestoesRapidasBtn3
-        );
+        setSugestoesRapidasBtn();
 
-        setSugestoesRapidasBtn(sugestoesRapidasBtn, atalhosCache, atalhoController);
+        setSendInputBtn(binding.sendPromptBtn, binding.promptInput);
 
-        setSendInputBtn(binding.sendPromptBtn, binding.promptInput, _userID, requisicaoController);
-        setVoiceInputBtn(binding.voicePromptInput, audioController);
+    }
+
+    public void setListener(ModalListener modalListener){
+        this.modalListener = modalListener;
     }
 
     public void keyboardValidationActions(ModalLayoutBinding binding){
@@ -154,64 +143,43 @@ public class ModalView extends FrameLayout {
         });
     }
 
-    public void setSugestoesRapidasBtn(List<Button> btns, List<Atalho> atalhos, AtalhoController atalhoController){ //TODO: fix init Atalho feature
-        for(int i = 0; i < btns.size(); i++){
+    public void setSugestoesRapidasBtn(){ //TODO: fix init Atalho feature
+        for(int i = 0; i < 3; i++){
             int finalI = i;
-            btns.get(i).setOnClickListener(new View.OnClickListener() {
+            binding.sugestoesRapidasSubLayout.getChildAt(i+1).setOnClickListener(new View.OnClickListener() { // because the first child is a text
                 @Override
                 public void onClick(View view) {
 
-                    atalhoController.iniciarAtalho(atalhos.get(finalI).getId());
+                    modalListener.atalhoInit(finalI);
 
                 }
             });
         }
     }
 
-    public void setSendInputBtn(ImageButton btn, EditText input, String usuarioID, RequisicaoController viewModel){
+    public void setSendInputBtn(ImageButton btn, EditText input){
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 var prompt = input.getText().toString();
                 Log.e("VIEWMODEL", "onClick: " + prompt );
-                if(usuarioID == null) return;
-                if(prompt.isEmpty() || input.getText() == null) return;
+//                if(usuarioID == null) return;
+//                if(prompt.isEmpty() || input.getText() == null) return;
+//
+//                var reqInput = new RequisicaoInput(prompt, usuarioID);
+//                viewModel.enviarRequisicao(reqInput);
 
-                var reqInput = new RequisicaoInput(prompt, usuarioID);
-                viewModel.enviarRequisicao(reqInput);
+                modalListener.onPromptSent(prompt);
                 input.setText("");
             }
         });
     }
 
-    public void setVoiceInputBtn(ImageButton micBtn, AudioController viewModel){
-        micBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                var filepath = getContext().getExternalFilesDir(Environment.DIRECTORY_MUSIC).getAbsolutePath() + "/voice_input.mp4";
+    public interface ModalListener{
+        void onPromptSent(String prompt);
+        void atalhoInit(int index);
 
-                if(isPlaying){
-
-                    recorder.stop();
-
-                    File audio = new File(filepath);
-                    Log.e("STTResponse", "onClick: " + audio.exists() );
-
-                    viewModel.transformarAudioParaTexto(audio);
-
-                    isPlaying = false;
-
-                    micBtn.setImageResource(R.drawable.micbtn);
-
-                    return;
-
-                }
-
-                recorder.start(filepath);
-                isPlaying = true;
-                micBtn.setImageResource(R.drawable.recording_audio);
-            }
-        });
     }
+
 }

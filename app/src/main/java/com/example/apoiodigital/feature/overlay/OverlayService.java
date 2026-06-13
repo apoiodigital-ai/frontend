@@ -23,8 +23,8 @@ import com.example.apoiodigital.databinding.ModalLayoutBinding;
 import com.example.apoiodigital.databinding.OverlayLayoutBinding;
 import com.example.apoiodigital.databinding.TuturialLayoutBinding;
 import com.example.apoiodigital.feature.modal.ModalView;
+import com.example.apoiodigital.feature.modal.data.RequisicaoInput;
 import com.example.apoiodigital.feature.modal.service.OpenAppService;
-import com.example.apoiodigital.feature.modal.service.TokenService;
 import com.example.apoiodigital.feature.modal.viewmodel.AtalhoController;
 import com.example.apoiodigital.feature.modal.viewmodel.AudioController;
 import com.example.apoiodigital.feature.modal.viewmodel.RequisicaoController;
@@ -53,6 +53,8 @@ public class OverlayService extends LifecycleService {
     private final List<Atalho> atalhosCache = new ArrayList<>();
     private String userID = null;
 
+    private OverlayViewManager viewManager;
+
 
     @Override
     public void onCreate() {
@@ -64,7 +66,7 @@ public class OverlayService extends LifecycleService {
         audioController = new AudioController();
         usuarioController = new UsuarioController();
 
-        carregarUserID();
+        usuarioController.getIdByToken(this);
 
         windowManagerService = new WindowManagerService();
 
@@ -77,13 +79,9 @@ public class OverlayService extends LifecycleService {
 
         overlayLayoutBinding = OverlayLayoutBinding.bind(mainOverlay);
 
+        viewManager = new OverlayViewManager(this);
 
-        modalView = new ModalView(this, layoutInflater, overlayLayoutBinding.container, audioController, atalhoController, requisicaoController);
-
-        overlayLayoutBinding.container.addView(modalView);
-
-        modalBinding = modalView.getBinding();
-
+        iniciarFluxoModal();
         setupObservers();
     }
 
@@ -93,6 +91,24 @@ public class OverlayService extends LifecycleService {
         if(windowManager != null && mainOverlay != null){
             windowManager.removeView(mainOverlay);
         }
+    }
+
+    public void iniciarFluxoModal(){
+        viewManager.showModalView(new ModalView.ModalListener() {
+            @Override
+            public void onPromptSent(String prompt) {
+                var request = new RequisicaoInput(prompt, userID);
+                requisicaoController.enviarRequisicao(request);
+            }
+
+            @Override
+            public void atalhoInit(int index) {
+                atalhoController.iniciarAtalho(atalhosCache.get(index).getId());
+            }
+        });
+
+        modalView = (ModalView) viewManager.getCurrentView();
+        modalBinding = modalView.getBinding();
     }
 
     private void criarNotificacaoForeground() {
@@ -116,7 +132,6 @@ public class OverlayService extends LifecycleService {
         startForeground(1, notification);
     }
 
-
     private void setupObservers(){
         requisicaoController.getState().observeForever(state -> {
             if (state.isLoading()) {
@@ -139,14 +154,19 @@ public class OverlayService extends LifecycleService {
 
         requisicaoController.getState().observe(this, state -> {
             if(state.isSuccess()){
-                changeToTutorial();
+//                changeToTutorial();
+                viewManager.removeCurrentView();
+                viewManager.showTutorialView();
             }
         });
 
         atalhoController.getInitAtalhoState().observe(this, state -> {
             if(state.isSuccess()){
-                changeToTutorial();
+//                changeToTutorial();
+                viewManager.removeCurrentView();
+                viewManager.showTutorialView();
             }
+
         });
 
 
@@ -189,23 +209,10 @@ public class OverlayService extends LifecycleService {
 
             this.userID = userIDDTO.getUserID().toString();
             atalhoController.carregarAtalhos(userID);
-            modalView.setModalSettings(userID, atalhosCache);
+            modalView.setModalSettings();
 
 
         });
-    }
-
-    private void carregarUserID(){
-        TokenService tokenService = new TokenService();
-        String token = tokenService.getAccessToken(this);
-
-        if (token == null || token.isEmpty()) {
-            Log.e("ModalView", "Token está vazio. Não é possível obter o userID.");
-            return;
-        }
-
-        usuarioController.getIdByToken(token);
-
     }
 
     private void changeToTutorial() {
@@ -220,7 +227,7 @@ public class OverlayService extends LifecycleService {
         LayoutInflater layoutInflater = LayoutInflater.from(this);
 
         overlayLayoutBinding.container.removeAllViews();
-        tutorialView = new TutorialView(this, layoutInflater, overlayLayoutBinding.container);
+        tutorialView = new TutorialView(this);
         overlayLayoutBinding.container.addView(tutorialView);
     }
 
