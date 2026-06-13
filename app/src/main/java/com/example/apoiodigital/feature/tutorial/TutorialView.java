@@ -108,7 +108,6 @@ public class TutorialView extends FrameLayout { //TODO: fix elements position ca
         binding.closeBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("ANIVAPAFPWAFW", "onClick: CLICOU CLICOU" );
                 // Fix: Remove the top-level overlay view from WindowManager
                 if (getRootView() != null) {
                     windowManager.removeView(getRootView());
@@ -141,20 +140,19 @@ public class TutorialView extends FrameLayout { //TODO: fix elements position ca
             var deltaY = bounds.getBottom() - bounds.getTop();
 
 //            Log.e("CryptServiceLOGE", "setArrowPosition > deltaX " + deltaX );
-            Log.e("CryptServiceLOGE", "setArrowPosition > h/2 " + height/2 );
 
 
             if( deltaX <= (width/3) ) {
 
                 if( bounds.getLeft() < (width/2) ){ // apontando para esquerda
 
-                    Log.e("CryptServiceLOGE", "setArrowPosition: apontando para esquerda" );
+
                     binding.setaImg.setX(bounds.getRight());
                     binding.setaImg.setRotationY(180f);
 
                 }else{ // apontando pra direita
 
-                    Log.e("CryptServiceLOGE", "setArrowPosition: apontando para direita" );
+
 
 //                    binding.setaImg.getLayoutParams().
                     binding.setaImg.setX(bounds.getLeft()-((float) (3 * deltaX) /2));
@@ -170,16 +168,12 @@ public class TutorialView extends FrameLayout { //TODO: fix elements position ca
 
                 if( bounds.getTop() < (height/2) ) { // seta apontando para cima
 
-//                    bottom = bounds.getTop();
-                    Log.e("CryptServiceLOGE", "setArrowPosition: apontando para cima" );
 
                     binding.setaImg.setY(bounds.getBottom());
                     binding.setaImg.setRotation(0f);
 
 
                 }else{ // seta apontando para baixo
-
-                    Log.e("CryptServiceLOGE", "setArrowPosition: apontando para baixo" );
 
                     binding.setaImg.setY((float) (bounds.getTop())-deltaY);
                     binding.setaImg.setRotation(100f);

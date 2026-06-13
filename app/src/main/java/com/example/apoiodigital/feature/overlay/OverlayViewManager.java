@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.WindowManager;
 
+import com.example.apoiodigital.databinding.OverlayLayoutBinding;
 import com.example.apoiodigital.feature.modal.ModalView;
 import com.example.apoiodigital.feature.tutorial.TutorialView;
 
@@ -42,11 +43,15 @@ public class OverlayViewManager {
         currentView = modal;
     }
 
-    public void showTutorialView() {
+    public void showTutorialView(View mainOverlay, OverlayLayoutBinding overlayLayoutBinding) {
         removeCurrentView();
 
         TutorialView tutorial = new TutorialView(context);
-        windowManager.addView(tutorial, windowManagerService.getWindowParamsForTutorial());
+        windowManager.updateViewLayout(mainOverlay, windowManagerService.getWindowParamsForTutorial());
+
+        overlayLayoutBinding.container.removeAllViews();
+        overlayLayoutBinding.container.addView(tutorial);
+
         currentView = tutorial;
     }
 

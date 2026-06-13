@@ -53,8 +53,8 @@ public class GetElementService extends AccessibilityService {
             String id_requisicao = intent.getStringExtra("id_requisicao");
             String contexto = intent.getStringExtra("contexto");
             FindBestAnswerRequestDTO requestDTO = new FindBestAnswerRequestDTO();
+
             requestDTO.setElementos(components);
-            requestDTO.setContexto(contextoCache);
 
             if(prompt != null){
                 promptCache = prompt;
@@ -62,10 +62,11 @@ public class GetElementService extends AccessibilityService {
             if(id_requisicao != null){
                 requisicaoIdCache = id_requisicao;
             }
-            if(contextoCache != null && contextoCache.isEmpty() && contexto != null){
+            if(contexto != null){
                 contextoCache = contexto;
             }
 
+            requestDTO.setContexto(contextoCache);
             requestDTO.setPrompt(promptCache);
 
             service.getResponseIA(requestDTO);

@@ -81,7 +81,6 @@ public class OverlayService extends LifecycleService {
 
         viewManager = new OverlayViewManager(this);
 
-        iniciarFluxoModal();
         setupObservers();
     }
 
@@ -154,17 +153,16 @@ public class OverlayService extends LifecycleService {
 
         requisicaoController.getState().observe(this, state -> {
             if(state.isSuccess()){
-//                changeToTutorial();
-                viewManager.removeCurrentView();
-                viewManager.showTutorialView();
+
+                viewManager.showTutorialView(mainOverlay, overlayLayoutBinding);
             }
         });
 
         atalhoController.getInitAtalhoState().observe(this, state -> {
             if(state.isSuccess()){
-//                changeToTutorial();
-                viewManager.removeCurrentView();
-                viewManager.showTutorialView();
+
+
+                viewManager.showTutorialView(mainOverlay, overlayLayoutBinding);
             }
 
         });
@@ -208,6 +206,7 @@ public class OverlayService extends LifecycleService {
             }
 
             this.userID = userIDDTO.getUserID().toString();
+            iniciarFluxoModal();
             atalhoController.carregarAtalhos(userID);
             modalView.setModalSettings();
 
@@ -215,34 +214,16 @@ public class OverlayService extends LifecycleService {
         });
     }
 
-    private void changeToTutorial() {
-        try {
-
-            windowManager.removeView(modalView);
-
-        } catch (Exception ignoredEx) {}
-
-        windowManager.updateViewLayout(mainOverlay, windowManagerService.getWindowParamsForTutorial());
-
-        LayoutInflater layoutInflater = LayoutInflater.from(this);
-
-        overlayLayoutBinding.container.removeAllViews();
-        tutorialView = new TutorialView(this);
-        overlayLayoutBinding.container.addView(tutorialView);
-    }
-
     private void enviarDadosParaIA(String prompt, String id_requisicao, String contexto){
 
-
-        Intent i = new Intent("com.example.apoiodigital.SEND_TO_IA");
-        i.putExtra("prompt", prompt);
-        i.putExtra("id_requisicao", id_requisicao);
-        i.putExtra("contexto", contexto);
-
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            sendBroadcast(i);
-        }, 3000); // 3000 milissegundos = 3 segundos
+            Intent i = new Intent("com.example.apoiodigital.SEND_TO_IA");
+            i.putExtra("prompt", prompt);
+            i.putExtra("id_requisicao", id_requisicao);
+            i.putExtra("contexto", contexto);
 
+            sendBroadcast(i);
+        }, 4000);
 
     }
 
