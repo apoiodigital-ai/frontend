@@ -34,6 +34,7 @@
             android:textAlignment="center"
             android:fontFamily="@font/utendobold"
             android:textSize="27sp"
+            android:textColor="@color/black"
             android:layout_marginBottom="20sp"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout

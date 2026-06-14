@@ -28,6 +28,7 @@ import com.example.apoiodigital.feature.modal.service.OpenAppService;
 import com.example.apoiodigital.feature.modal.viewmodel.AtalhoController;
 import com.example.apoiodigital.feature.modal.viewmodel.RequisicaoController;
 import com.example.apoiodigital.feature.screen_question.AnswerValidatorController;
+import com.example.apoiodigital.feature.screen_question.CarrosselService;
 import com.example.apoiodigital.feature.screen_question.InputService;
 import com.example.apoiodigital.feature.screen_question.QuestionView;
 import com.example.apoiodigital.feature.screen_question.UserAnswerValidatorRequestDTO;
@@ -143,6 +144,14 @@ public class OverlayService extends LifecycleService {
             QuestionView questionView = (QuestionView) viewManager.getCurrentView();
             questionView.setQuestion(response.getPergunta());
             questionView.setCarrossel(response.getOpcoes());
+
+            questionView.setButtonClick(new CarrosselService.ButtonListener() {
+                @Override
+                public void onClick(String pergunta, String resposta) {
+                    enviarDadosAdicionaisParaIA(pergunta, resposta);
+                }
+            });
+
             questionView.setInput(new InputService.InputListener() {
                 @Override
                 public void onPromptButtonClick(String pergunta, String resposta) {
@@ -163,12 +172,7 @@ public class OverlayService extends LifecycleService {
 
         answerValidatorController.getResponseData().observeForever(response -> {
             if(response.isSatisfaz()){
-                Intent i = new Intent("com.example.apoiodigital.SEND_TO_AI_WITH_ADDITIONAL_INFO");
-                i.putExtra("pergunta_espc", response.getPergunta_especificacao());
-                i.putExtra("resposta_espc", response.getResposta_especificacao());
-
-                sendBroadcast(i);
-                viewManager.showTutorialView(mainOverlay, overlayLayoutBinding);
+                enviarDadosAdicionaisParaIA(response.getPergunta_especificacao(), response.getResposta_especificacao());
             }
         });
 
@@ -249,6 +253,15 @@ public class OverlayService extends LifecycleService {
             sendBroadcast(i);
         }, 4000);
 
+    }
+
+    private void enviarDadosAdicionaisParaIA(String pergunta, String resposta){
+        Intent i = new Intent("com.example.apoiodigital.SEND_TO_AI_WITH_ADDITIONAL_INFO");
+        i.putExtra("pergunta_espc", pergunta);
+        i.putExtra("resposta_espc", resposta);
+
+        sendBroadcast(i);
+        viewManager.showTutorialView(mainOverlay, overlayLayoutBinding);
     }
 
     private String abrirAplicativoERetornarContexto(Requisicao requisicao){

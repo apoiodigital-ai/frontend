@@ -39,12 +39,6 @@ public class CarrosselService {
         setArrows(opcoesBackend);
     }
 
-    private void init(LayoutInflater inflater, ViewGroup root){
-
-        questionLayoutBinding = QuestionLayoutBinding.inflate(inflater, root, true);
-
-    }
-
     // This function generate the dots according to the number of pages.
     private void generateDots(){
         questionLayoutBinding.optionsCounterContainer.removeAllViews();
@@ -52,7 +46,8 @@ public class CarrosselService {
         for(int i = 0; i < totalPaginas; i++){
             ImageView dot = new ImageView(context);
 
-            dot.setImageResource(R.drawable.dot_inactive);
+            if(i == 0) dot.setImageResource(R.drawable.dot_active);
+            else dot.setImageResource(R.drawable.dot_inactive);
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -119,6 +114,21 @@ public class CarrosselService {
                 setOptions(opcoesBackend);
             }
         });
+    }
+
+    void setButtons(ButtonListener buttonListener){
+        String pergunta = questionLayoutBinding.titleText.getText().toString();
+
+        questionLayoutBinding.firstButton.setOnClickListener(view -> {
+            buttonListener.onClick(pergunta, questionLayoutBinding.firstButton.getText().toString());
+        });
+        questionLayoutBinding.secondButton.setOnClickListener(view -> {
+            buttonListener.onClick(pergunta, questionLayoutBinding.secondButton.getText().toString());
+        });
+    }
+
+    public interface ButtonListener{
+        void onClick(String pergunta, String resposta);
     }
 
 }

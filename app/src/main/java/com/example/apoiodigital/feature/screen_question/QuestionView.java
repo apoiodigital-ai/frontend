@@ -36,7 +36,6 @@ public class QuestionView extends FrameLayout {
         carrosselService = new CarrosselService(questionLayoutBinding, context);
         inputService = new InputService(questionLayoutBinding);
 
-
     }
 
     public void setInput(InputService.InputListener inputListener){
@@ -45,6 +44,10 @@ public class QuestionView extends FrameLayout {
 
     public void setCarrossel(List<String> opcoesBackend){
         carrosselService.initSetup(opcoesBackend);
+    }
+
+    public void setButtonClick(CarrosselService.ButtonListener buttonListener){
+        carrosselService.setButtons(buttonListener);
     }
 
     public void setQuestion(String pergunta){
