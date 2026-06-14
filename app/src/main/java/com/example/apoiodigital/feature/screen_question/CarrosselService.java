@@ -1,5 +1,6 @@
 package com.example.apoiodigital.feature.screen_question;
 
+import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
@@ -19,12 +20,13 @@ public class CarrosselService {
     private QuestionLayoutBinding questionLayoutBinding;
 
     private int totalPaginas;
-    private Context context;
+    private final Context context;
 
     private int paginaAtual = 0;
 
-    public CarrosselService(LayoutInflater inflater, ViewGroup root){
-        init(inflater, root);
+    public CarrosselService(QuestionLayoutBinding binding, Context context){
+        this.context = context;
+        this.questionLayoutBinding = binding;
 
     }
 
@@ -82,14 +84,23 @@ public class CarrosselService {
 
     // This function sets the options according the var 'paginaAtual'.
     private void setOptions(List<String> opcoesBackend){
-        if(opcoesBackend.get(paginaAtual+1) != null){
+        if(opcoesBackend.isEmpty()) {
+            questionLayoutBinding.firstButton.setVisibility(GONE);
+            questionLayoutBinding.secondButton.setVisibility(GONE);
+            return;
+        }
+        try{
             questionLayoutBinding.firstButton.setText(opcoesBackend.get(paginaAtual));
-            questionLayoutBinding.secondButton.setText(opcoesBackend.get(paginaAtual+1));
+            questionLayoutBinding.secondButton.setText(opcoesBackend.get(paginaAtual + 1));
+            questionLayoutBinding.firstButton.setVisibility(VISIBLE);
             questionLayoutBinding.secondButton.setVisibility(VISIBLE);
-        }else{
+
+        } catch (RuntimeException e) {
             questionLayoutBinding.firstButton.setText(opcoesBackend.get(paginaAtual));
+            questionLayoutBinding.firstButton.setVisibility(VISIBLE);
             questionLayoutBinding.secondButton.setVisibility(INVISIBLE);
         }
+
     }
 
     // This function sets the listeners for the buttons.

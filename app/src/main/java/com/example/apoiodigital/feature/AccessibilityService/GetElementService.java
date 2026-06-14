@@ -25,7 +25,6 @@ import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -68,7 +67,7 @@ public class GetElementService extends AccessibilityService {
             ChecksInformationNeedsRequestDTO checksInformationNeedsRequestDTO =
                     new ChecksInformationNeedsRequestDTO(components, contextoCache, promptCache);
 
-            tutorialViewModel.checkInfomationNeeds(checksInformationNeedsRequestDTO);
+            tutorialViewModel.checkInformationNeeds(checksInformationNeedsRequestDTO);
             // ----
 
 
@@ -96,7 +95,7 @@ public class GetElementService extends AccessibilityService {
 
     }
 
-    private final BroadcastReceiver sendToIAWithAddittionalInfo = new BroadcastReceiver() {
+    private final BroadcastReceiver sendToIAWithAdditionalInfo = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             FindBestAnswerRequestDTO requestDTO = new FindBestAnswerRequestDTO();
@@ -299,7 +298,7 @@ public class GetElementService extends AccessibilityService {
         IntentFilter intentFilter4 = new IntentFilter();
         intentFilter3.addAction("com.example.apoiodigital.SEND_TO_AI_WITH_ADDITIONAL_INFO");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            registerReceiver(sendToIAWithAddittionalInfo, intentFilter3, RECEIVER_EXPORTED);
+            registerReceiver(sendToIAWithAdditionalInfo, intentFilter4, RECEIVER_EXPORTED);
         }
 //        getViewEvent();
 
@@ -319,7 +318,7 @@ public class GetElementService extends AccessibilityService {
         unregisterReceiver(receiverSendComponents);
         unregisterReceiver(clickReceiver);
         unregisterReceiver(receiverResponseIA);
-        unregisterReceiver(sendToIAWithAddittionalInfo);
+        unregisterReceiver(sendToIAWithAdditionalInfo);
 
         super.onDestroy();
 

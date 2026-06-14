@@ -22,8 +22,8 @@ public class TutorialViewModel {
 
     private final RespostaService respostaService = new RespostaService();
     private final TutorialRepository tutorialRepository = new TutorialRepository(respostaService);
-    private final MutableLiveData<Boolean> isRespostaLoading = new MutableLiveData<>();
-    private final MutableLiveData<ChecksInformationNeedsResponseDTO> checksInformationNeedsResponse = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isRespostaLoading = TutorialStateHolder.getInstance().getIsRespostaLoading();
+    private final MutableLiveData<ChecksInformationNeedsResponseDTO> checksInformationNeedsResponse = TutorialStateHolder.getInstance().getChecksInformationNeedsResponse();
     private FindBestAnswerResponseDTO dataResponse;
     private final String TAG = "TutorialViewModelLOGE";
 
@@ -66,25 +66,27 @@ public class TutorialViewModel {
         });
     }
 
-    public void checkInfomationNeeds(ChecksInformationNeedsRequestDTO requestDTO){
+    public void checkInformationNeeds(ChecksInformationNeedsRequestDTO requestDTO){
         isRespostaLoading.postValue(true);
 
         tutorialRepository.validarNecessidadeInformacoes(requestDTO).enqueue(new Callback<ChecksInformationNeedsResponseDTO>() {
             @Override
             public void onResponse(Call<ChecksInformationNeedsResponseDTO> call, Response<ChecksInformationNeedsResponseDTO> response) {
+
+                Log.e(TAG, "CHECK FEATURE - onResponse: " + response.body());
+
                 if(response.body() != null && response.isSuccessful()){
                     checksInformationNeedsResponse.postValue(response.body());
+                    Log.e(TAG, "CHECK FEATURE - onResponse: " + response.body().getDescricao_duvida());
 
-
-
-                }else {
+                }else if (response.body() == null){
                     checksInformationNeedsResponse.postValue(null);
                 }
             }
 
             @Override
             public void onFailure(Call<ChecksInformationNeedsResponseDTO> call, Throwable t) {
-
+                Log.e(TAG, "onFailure: ", t);
             }
         });
     }

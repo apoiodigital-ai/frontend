@@ -53,7 +53,7 @@ public interface ApiService {
     @GET("resposta/listar/{idReq}")
     Call<List<IAResponseDTO>> pegarIAResponsePorRequisicao(@Path("idReq") String idReq);
 
-    @POST("/validar/necessidade-informacoes")
+    @POST("resposta/validar/necessidade-informacoes")
     Call<ChecksInformationNeedsResponseDTO> validarNecessidadeInformacoes(
             @Body ChecksInformationNeedsRequestDTO requestDTO);
 

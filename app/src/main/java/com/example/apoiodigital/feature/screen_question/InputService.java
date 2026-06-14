@@ -9,36 +9,24 @@ import com.example.apoiodigital.feature.tutorial.data.TiposPendencia;
 
 public class InputService {
 
-    private QuestionLayoutBinding binding;
+    private final QuestionLayoutBinding binding;
 
-    public InputService(LayoutInflater inflater, ViewGroup root) {
+    public InputService(QuestionLayoutBinding binding) {
 
-        init(inflater, root);
-
-    }
-
-    private void init(LayoutInflater inflater, ViewGroup root){
-
-        binding = QuestionLayoutBinding.inflate(inflater, root, true);
+        this.binding = binding;
 
     }
+
 
     public void setClickPromptButton(InputListener inputListener){
         binding.sendPromptBtn.setOnClickListener(view -> {
            String resposta = binding.promptInput.getText().toString();
-           if(resposta.isEmpty() || binding.promptInput.getText() == null) return;
+           if(resposta.isEmpty() || binding.promptInput.getText() == null) {
+               return;
+           }
 
             inputListener.onPromptButtonClick(binding.titleText.getText().toString(), resposta);
 
-//           UserAnswerValidatorRequestDTO dto = new UserAnswerValidatorRequestDTO(
-//                contextoTela,
-//                   binding.titleText.getText().toString(),
-//                   resposta,
-//                   tiposPendencia,
-//                   descricaoDuvida
-//           );
-//
-//            answerValidatorController.validarRespostaDaNecessidade(dto);
         });
     }
 

@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -71,7 +72,10 @@ public class OverlayService extends LifecycleService {
 
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         WindowManager.LayoutParams params = windowManagerUtils.getWindowParams();
-        LayoutInflater layoutInflater = LayoutInflater.from(this);
+
+        ContextThemeWrapper themeWrapper = new ContextThemeWrapper(this, R.style.Theme_ApoioDigital_MakingModal);
+
+        LayoutInflater layoutInflater = LayoutInflater.from(themeWrapper);
 
         mainOverlay = layoutInflater.inflate(R.layout.overlay_layout, null);
         windowManager.addView(mainOverlay, params);
@@ -130,15 +134,20 @@ public class OverlayService extends LifecycleService {
     }
 
     private void setupObservers(){
-        tutorialViewModel.getChecksInformationNeedsResponse().observe(this, response -> {
+        tutorialViewModel.getChecksInformationNeedsResponse().observeForever(response -> {
             if(response == null) return;
+
+            Log.e("OVERLAYSERVICE", "setupObservers: " + response.getDescricao_duvida());
 
             viewManager.showQuestionView(mainOverlay, overlayLayoutBinding);
             QuestionView questionView = (QuestionView) viewManager.getCurrentView();
+            questionView.setQuestion(response.getPergunta());
             questionView.setCarrossel(response.getOpcoes());
             questionView.setInput(new InputService.InputListener() {
                 @Override
                 public void onPromptButtonClick(String pergunta, String resposta) {
+                    Log.e("OVERLAYSERVICE", "onPromptButtonClick: " + resposta);
+
                     UserAnswerValidatorRequestDTO dto = new UserAnswerValidatorRequestDTO(
                         response.getContexto(),
                        pergunta,
@@ -152,7 +161,7 @@ public class OverlayService extends LifecycleService {
             });
         });
 
-        answerValidatorController.getResponseData().observe(this, response -> {
+        answerValidatorController.getResponseData().observeForever(response -> {
             if(response.isSatisfaz()){
                 Intent i = new Intent("com.example.apoiodigital.SEND_TO_AI_WITH_ADDITIONAL_INFO");
                 i.putExtra("pergunta_espc", response.getPergunta_especificacao());

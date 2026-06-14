@@ -28,8 +28,18 @@ public class OverlayViewManager {
     }
 
     public void removeCurrentView() {
-        if (currentView != null && currentView.isAttachedToWindow()) {
-            windowManager.removeView(currentView);
+        if (currentView != null) {
+            if (currentView.getParent() instanceof android.view.ViewGroup) {
+
+                ((android.view.ViewGroup) currentView.getParent()).removeView(currentView);
+            } else if (currentView.isAttachedToWindow()) {
+
+                try {
+                    windowManager.removeView(currentView);
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                }
+            }
             currentView = null;
         }
     }

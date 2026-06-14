@@ -58,6 +58,7 @@ public class RetrofitClient {
 
         return new Retrofit.Builder()
                 .baseUrl(baseUrl)
+                .addConverterFactory(new NullOnEmptyConverterFactory())
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpClient)
                 .build();
@@ -76,6 +77,7 @@ public class RetrofitClient {
 
         return new Retrofit.Builder()
                 .baseUrl(BASE_URL)
+                .addConverterFactory(new NullOnEmptyConverterFactory())
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpClient)
