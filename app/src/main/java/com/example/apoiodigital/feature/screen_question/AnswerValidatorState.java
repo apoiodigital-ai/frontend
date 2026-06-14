@@ -1,4 +1,4 @@
-package com.example.apoiodigital.feature.screenQuestion;
+package com.example.apoiodigital.feature.screen_question;
 
 public class AnswerValidatorState {
 

@@ -102,6 +102,8 @@
                     android:background="@android:color/transparent"
                     android:rotationY="180"
                     app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     />
 
                 <LinearLayout
@@ -109,7 +111,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_centerInParent="true"/>
+                    android:layout_centerInParent="true"
+                    app:layout_constraintStart_toEndOf="@id/backButton"
+                    app:layout_constraintEnd_toStartOf="@id/nextButton"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
                 <ImageButton
                     android:id="@+id/nextButton"
@@ -120,6 +126,8 @@
                     android:backgroundTint="@null"
                     android:background="@android:color/transparent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     />
 
 

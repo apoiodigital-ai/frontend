@@ -15,6 +15,7 @@ import android.widget.FrameLayout;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
+import com.example.apoiodigital.databinding.OverlayLayoutBinding;
 import com.example.apoiodigital.databinding.TuturialLayoutBinding;
 import com.example.apoiodigital.feature.tutorial.data.Bounds;
 import com.google.gson.Gson;
@@ -28,6 +29,7 @@ public class TutorialView extends FrameLayout { //TODO: fix elements position ca
     private final WindowManager windowManager;
 
     private TuturialLayoutBinding binding;
+    private final OverlayLayoutBinding overlayLayoutBinding;
 
     private int height;
     private int width;
@@ -76,15 +78,20 @@ public class TutorialView extends FrameLayout { //TODO: fix elements position ca
 
             binding.loadingContainer.setVisibility(View.INVISIBLE);
             binding.tutorialContainer.setVisibility(View.VISIBLE);
+
+            overlayLayoutBinding.closeBtn.setVisibility(View.VISIBLE);
+            overlayLayoutBinding.closeBtn.bringToFront();
+
         }
     };
 
 
-    public TutorialView(Context context) {
+    public TutorialView(Context context, OverlayLayoutBinding overlayLayoutBinding) {
         super(context);
 
         this.context = context;
         this.windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        this.overlayLayoutBinding = overlayLayoutBinding;
 
         // Ensure TutorialView itself fills the parent (which is a ConstraintLayout in OverlayService)
         ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(
@@ -104,16 +111,6 @@ public class TutorialView extends FrameLayout { //TODO: fix elements position ca
 
         init();
 
-
-        binding.closeBtn.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Fix: Remove the top-level overlay view from WindowManager
-                if (getRootView() != null) {
-                    windowManager.removeView(getRootView());
-                }
-            }
-        });
 
     }
 

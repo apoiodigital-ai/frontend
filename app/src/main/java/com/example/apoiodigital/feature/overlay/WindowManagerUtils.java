@@ -4,7 +4,7 @@ import android.graphics.PixelFormat;
 import android.os.Build;
 import android.view.WindowManager;
 
-public class WindowManagerService {
+public class WindowManagerUtils {
 
     public WindowManager.LayoutParams getWindowParams() {
         return new WindowManager.LayoutParams(

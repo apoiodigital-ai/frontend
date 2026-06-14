@@ -6,6 +6,8 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.apoiodigital.feature.tutorial.data.ChecksInformationNeedsRequestDTO;
+import com.example.apoiodigital.feature.tutorial.data.ChecksInformationNeedsResponseDTO;
 import com.example.apoiodigital.feature.tutorial.data.FindBestAnswerResponseDTO;
 import com.example.apoiodigital.feature.tutorial.data.FindBestAnswerRequestDTO;
 import com.example.apoiodigital.feature.tutorial.repository.TutorialRepository;
@@ -54,6 +56,22 @@ public class TutorialViewModel {
             public void onFailure(Call<FindBestAnswerResponseDTO> call, Throwable t) {
                 Log.e(TAG, "onFailure: " + t.getMessage());
                 t.printStackTrace();
+            }
+        });
+    }
+
+    public void checkInfomationNeeds(ChecksInformationNeedsRequestDTO requestDTO){
+        isRespostaLoading.postValue(true);
+
+        tutorialRepository.validarNecessidadeInformacoes(requestDTO).enqueue(new Callback<ChecksInformationNeedsResponseDTO>() {
+            @Override
+            public void onResponse(Call<ChecksInformationNeedsResponseDTO> call, Response<ChecksInformationNeedsResponseDTO> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<ChecksInformationNeedsResponseDTO> call, Throwable t) {
+
             }
         });
     }

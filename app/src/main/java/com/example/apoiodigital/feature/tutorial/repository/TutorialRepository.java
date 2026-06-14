@@ -1,5 +1,7 @@
 package com.example.apoiodigital.feature.tutorial.repository;
 
+import com.example.apoiodigital.feature.tutorial.data.ChecksInformationNeedsRequestDTO;
+import com.example.apoiodigital.feature.tutorial.data.ChecksInformationNeedsResponseDTO;
 import com.example.apoiodigital.feature.tutorial.data.FindBestAnswerResponseDTO;
 import com.example.apoiodigital.feature.tutorial.data.FindBestAnswerRequestDTO;
 import com.example.apoiodigital.core.tables.resposta.RespostaService;
@@ -16,5 +18,9 @@ public class TutorialRepository {
 
     public Call<FindBestAnswerResponseDTO> getIaMessage(FindBestAnswerRequestDTO requestDTO) {
         return respostaService.getMessageIA(requestDTO);
+    }
+
+    public Call<ChecksInformationNeedsResponseDTO> validarNecessidadeInformacoes(ChecksInformationNeedsRequestDTO requestDTO){
+        return respostaService.validarNecessidadeInformacoes(requestDTO);
     }
 }

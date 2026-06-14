@@ -5,8 +5,6 @@ import com.example.apoiodigital.feature.tutorial.data.FindBestAnswerResponseDTO;
 import com.example.apoiodigital.feature.history.data.IAResponseDTO;
 import com.example.apoiodigital.feature.history.data.ListRequisicaoRequestDTO;
 import com.example.apoiodigital.feature.auth.data.RefreshRequestDTO;
-import com.example.apoiodigital.feature.screenQuestion.UserAnswerValidatorRequestDTO;
-import com.example.apoiodigital.feature.screenQuestion.UserAnswerValidatorResponseDTO;
 import com.example.apoiodigital.feature.usuario.data.UserIDDTO;
 import com.example.apoiodigital.core.tables.atalho.Atalho;
 import com.example.apoiodigital.feature.tutorial.data.ChecksInformationNeedsRequestDTO;
@@ -15,18 +13,14 @@ import com.example.apoiodigital.feature.tutorial.data.FindBestAnswerRequestDTO;
 import com.example.apoiodigital.core.tables.requisicao.Requisicao;
 import com.example.apoiodigital.feature.modal.data.RequisicaoInput;
 import com.example.apoiodigital.feature.modal.data.RequisicaoResponse;
-import com.example.apoiodigital.feature.modal.data.STTResponse;
 import com.example.apoiodigital.core.tables.usuario.Usuario;
 
 import java.util.List;
 
-import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
-import retrofit2.http.Multipart;
 import retrofit2.http.POST;
-import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 

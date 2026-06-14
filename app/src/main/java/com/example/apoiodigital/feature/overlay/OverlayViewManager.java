@@ -12,11 +12,11 @@ public class OverlayViewManager {
 
     private final Context context;
     private final WindowManager windowManager;
-    private final WindowManagerService windowManagerService;
+    private final WindowManagerUtils windowManagerUtils;
     private View currentView;
 
     public OverlayViewManager(Context context) {
-        windowManagerService = new WindowManagerService();
+        windowManagerUtils = new WindowManagerUtils();
 
         this.context = context;
         windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -33,26 +33,46 @@ public class OverlayViewManager {
         }
     }
 
-    public void showModalView(ModalView.ModalListener listener) {
+    public void showModalView(ModalView.ModalListener listener, OverlayLayoutBinding overlayLayoutBinding) {
         removeCurrentView();
 
         ModalView modal = new ModalView(context);
         modal.setListener(listener);
 
-        windowManager.addView(modal, windowManagerService.getWindowParams());
+        overlayLayoutBinding.closeBtn.setVisibility(View.INVISIBLE);
+
+        windowManager.addView(modal, windowManagerUtils.getWindowParams());
         currentView = modal;
     }
 
     public void showTutorialView(View mainOverlay, OverlayLayoutBinding overlayLayoutBinding) {
         removeCurrentView();
 
-        TutorialView tutorial = new TutorialView(context);
-        windowManager.updateViewLayout(mainOverlay, windowManagerService.getWindowParamsForTutorial());
+        TutorialView tutorial = new TutorialView(context, overlayLayoutBinding);
+        windowManager.updateViewLayout(mainOverlay, windowManagerUtils.getWindowParamsForTutorial());
 
         overlayLayoutBinding.container.removeAllViews();
         overlayLayoutBinding.container.addView(tutorial);
 
+        overlayLayoutBinding.closeBtn.setVisibility(View.VISIBLE);
+        overlayLayoutBinding.closeBtn.bringToFront();
+
         currentView = tutorial;
+
+        //TODO: needs to fix the close button when mask is appearing
+        overlayLayoutBinding.closeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Fix: Remove the top-level overlay view from WindowManager
+
+                windowManager.removeView(mainOverlay);
+
+            }
+        });
+    }
+
+    public void showQuestionView(){
+
     }
 
 

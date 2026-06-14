@@ -107,19 +107,6 @@ public class MaskView extends View {
 
 
     }
-//
-//    @Override
-//    public boolean dispatchTouchEvent(MotionEvent event) {
-//        float x = event.getX();
-//        float y = event.getY();
-//
-//        if (x >= left && x <= right && y >= top && y <= bottom) {
-//            Log.e("MaskViewComponent", "onTouchEvent: Clicou" );
-//            return true;
-//        }
-//
-//        return false;
-//    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -128,13 +115,12 @@ public class MaskView extends View {
 
         if (x >= left && x <= right && y >= top && y <= bottom) {
 
-
-            Log.e("MaskViewComponent", "onTouchEvent: Clicou" );
             Intent intent = new Intent("com.example.apoiodigital.CLICK_ELEMENT");
             _context.sendBroadcast(intent);
 
             binding.tutorialContainer.setVisibility(View.INVISIBLE);
             binding.loadingContainer.setVisibility(View.VISIBLE);
+
             return false;
         }
 

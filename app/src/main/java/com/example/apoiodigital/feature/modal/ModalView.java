@@ -175,6 +175,34 @@ public class ModalView extends FrameLayout {
         });
     }
 
+    public void setModalLoading(boolean isLoading){
+        if (isLoading) {
+            binding.modalSubLayout.setVisibility(View.INVISIBLE);
+            binding.modalLoading.setVisibility(View.VISIBLE);
+            binding.voicePromptInput.setVisibility(View.INVISIBLE);
+        } else {
+            binding.modalLoading.setVisibility(View.INVISIBLE);
+            binding.modalSubLayout.setVisibility(View.VISIBLE);
+            binding.voicePromptInput.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void setAtalhoLoading(boolean isLoading){
+        if (isLoading) {
+            binding.sugestoesRapidasSubLayout.setVisibility(View.INVISIBLE);
+            binding.sugestoesRapidasLoading.setVisibility(View.VISIBLE);
+        } else {
+            binding.sugestoesRapidasLoading.setVisibility(View.INVISIBLE);
+            binding.sugestoesRapidasSubLayout.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void setAtalhosText(List<Atalho> atalhos){
+        binding.sugestoesRapidasBtn.setText(atalhos.get(0).getTitulo());
+        binding.sugestoesRapidasBtn2.setText(atalhos.get(1).getTitulo());
+        binding.sugestoesRapidasBtn3.setText(atalhos.get(2).getTitulo());
+    }
+
     public interface ModalListener{
         void onPromptSent(String prompt);
         void atalhoInit(int index);

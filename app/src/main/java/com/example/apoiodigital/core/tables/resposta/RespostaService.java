@@ -6,8 +6,6 @@ import com.example.apoiodigital.feature.tutorial.data.FindBestAnswerResponseDTO;
 import com.example.apoiodigital.feature.tutorial.data.FindBestAnswerRequestDTO;
 import com.example.apoiodigital.feature.api.ApiService;
 import com.example.apoiodigital.core.Network.RetrofitClient;
-import com.example.apoiodigital.feature.screenQuestion.UserAnswerValidatorRequestDTO;
-import com.example.apoiodigital.feature.screenQuestion.UserAnswerValidatorResponseDTO;
 
 import retrofit2.Call;
 

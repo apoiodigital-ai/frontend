@@ -21,37 +21,28 @@ import com.example.apoiodigital.core.tables.requisicao.Requisicao;
 import com.example.apoiodigital.core.tables.usuario.UsuarioController;
 import com.example.apoiodigital.databinding.ModalLayoutBinding;
 import com.example.apoiodigital.databinding.OverlayLayoutBinding;
-import com.example.apoiodigital.databinding.TuturialLayoutBinding;
 import com.example.apoiodigital.feature.modal.ModalView;
 import com.example.apoiodigital.feature.modal.data.RequisicaoInput;
 import com.example.apoiodigital.feature.modal.service.OpenAppService;
 import com.example.apoiodigital.feature.modal.viewmodel.AtalhoController;
-import com.example.apoiodigital.feature.modal.viewmodel.AudioController;
 import com.example.apoiodigital.feature.modal.viewmodel.RequisicaoController;
-import com.example.apoiodigital.feature.tutorial.TutorialView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class OverlayService extends LifecycleService {
 
-    private AudioController audioController;
     private RequisicaoController requisicaoController;
     private AtalhoController atalhoController;
     private UsuarioController usuarioController;
 
-    private WindowManagerService windowManagerService;
     private WindowManager windowManager;
-    private ModalLayoutBinding modalBinding;
     private OverlayLayoutBinding overlayLayoutBinding;
 
-    private TuturialLayoutBinding tuturialLayoutBinding;
     private ModalView modalView;
-    private TutorialView tutorialView;
     private View mainOverlay;
 
     private final List<Atalho> atalhosCache = new ArrayList<>();
-    private String userID = null;
 
     private OverlayViewManager viewManager;
 
@@ -63,15 +54,14 @@ public class OverlayService extends LifecycleService {
 
         requisicaoController = new RequisicaoController();
         atalhoController = new AtalhoController();
-        audioController = new AudioController();
         usuarioController = new UsuarioController();
 
         usuarioController.getIdByToken(this);
 
-        windowManagerService = new WindowManagerService();
+        WindowManagerUtils windowManagerUtils = new WindowManagerUtils();
 
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        WindowManager.LayoutParams params = windowManagerService.getWindowParams();
+        WindowManager.LayoutParams params = windowManagerUtils.getWindowParams();
         LayoutInflater layoutInflater = LayoutInflater.from(this);
 
         mainOverlay = layoutInflater.inflate(R.layout.overlay_layout, null);
@@ -92,7 +82,7 @@ public class OverlayService extends LifecycleService {
         }
     }
 
-    public void iniciarFluxoModal(){
+    public void iniciarFluxoModal(String userID){
         viewManager.showModalView(new ModalView.ModalListener() {
             @Override
             public void onPromptSent(String prompt) {
@@ -104,10 +94,9 @@ public class OverlayService extends LifecycleService {
             public void atalhoInit(int index) {
                 atalhoController.iniciarAtalho(atalhosCache.get(index).getId());
             }
-        });
+        }, overlayLayoutBinding);
 
         modalView = (ModalView) viewManager.getCurrentView();
-        modalBinding = modalView.getBinding();
     }
 
     private void criarNotificacaoForeground() {
@@ -133,15 +122,7 @@ public class OverlayService extends LifecycleService {
 
     private void setupObservers(){
         requisicaoController.getState().observeForever(state -> {
-            if (state.isLoading()) {
-                modalBinding.modalSubLayout.setVisibility(View.INVISIBLE);
-                modalBinding.modalLoading.setVisibility(View.VISIBLE);
-                modalBinding.voicePromptInput.setVisibility(View.INVISIBLE);
-            } else {
-                modalBinding.modalLoading.setVisibility(View.INVISIBLE);
-                modalBinding.modalSubLayout.setVisibility(View.VISIBLE);
-                modalBinding.voicePromptInput.setVisibility(View.VISIBLE);
-            }
+            modalView.setModalLoading(state.isLoading());
         });
 
         requisicaoController.getRequisicaoResponse().observeForever(resp -> {
@@ -179,9 +160,7 @@ public class OverlayService extends LifecycleService {
         atalhoController.getGetAtalhosResponse().observeForever(atalhos -> {
 
             if (atalhos.size() >= 3) {
-                modalBinding.sugestoesRapidasBtn.setText(atalhos.get(0).getTitulo());
-                modalBinding.sugestoesRapidasBtn2.setText(atalhos.get(1).getTitulo());
-                modalBinding.sugestoesRapidasBtn3.setText(atalhos.get(2).getTitulo());
+                modalView.setAtalhosText(atalhos);
             }
 
             atalhosCache.clear();
@@ -189,13 +168,7 @@ public class OverlayService extends LifecycleService {
         });
 
         atalhoController.getGetAtalhosState().observeForever(state -> {
-            if (state.isLoading()) {
-                modalBinding.sugestoesRapidasSubLayout.setVisibility(View.INVISIBLE);
-                modalBinding.sugestoesRapidasLoading.setVisibility(View.VISIBLE);
-            } else {
-                modalBinding.sugestoesRapidasLoading.setVisibility(View.INVISIBLE);
-                modalBinding.sugestoesRapidasSubLayout.setVisibility(View.VISIBLE);
-            }
+            modalView.setAtalhoLoading(state.isLoading());
         });
 
         usuarioController.getUserID().observeForever(userIDDTO -> {
@@ -205,8 +178,8 @@ public class OverlayService extends LifecycleService {
                 return;
             }
 
-            this.userID = userIDDTO.getUserID().toString();
-            iniciarFluxoModal();
+            String userID = userIDDTO.getUserID().toString();
+            iniciarFluxoModal(userID);
             atalhoController.carregarAtalhos(userID);
             modalView.setModalSettings();
 

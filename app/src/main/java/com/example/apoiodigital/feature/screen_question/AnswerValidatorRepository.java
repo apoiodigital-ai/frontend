@@ -1,7 +1,6 @@
-package com.example.apoiodigital.feature.screenQuestion;
+package com.example.apoiodigital.feature.screen_question;
 
 import com.example.apoiodigital.core.Network.RetrofitClient;
-import com.example.apoiodigital.feature.modal.service.ModalApiService;
 
 import retrofit2.Call;
 import retrofit2.Callback;
