@@ -20,16 +20,21 @@ public class CarrosselService {
 
     private int totalPaginas;
     private Context context;
-    private List<String> opcoesBackend;
+
     private int paginaAtual = 0;
 
     public CarrosselService(LayoutInflater inflater, ViewGroup root){
         init(inflater, root);
 
+    }
+
+    public void initSetup(List<String> opcoesBackend){
+
         this.totalPaginas = (int) Math.ceil(opcoesBackend.size() / 2.0);
 
-        setOptions();
+        setOptions(opcoesBackend);
         generateDots();
+        setArrows(opcoesBackend);
     }
 
     private void init(LayoutInflater inflater, ViewGroup root){
@@ -76,7 +81,7 @@ public class CarrosselService {
     }
 
     // This function sets the options according the var 'paginaAtual'.
-    private void setOptions(){
+    private void setOptions(List<String> opcoesBackend){
         if(opcoesBackend.get(paginaAtual+1) != null){
             questionLayoutBinding.firstButton.setText(opcoesBackend.get(paginaAtual));
             questionLayoutBinding.secondButton.setText(opcoesBackend.get(paginaAtual+1));
@@ -88,19 +93,19 @@ public class CarrosselService {
     }
 
     // This function sets the listeners for the buttons.
-    private void setArrows(){
+    private void setArrows(List<String> opcoesBackend){
         questionLayoutBinding.backButton.setOnClickListener(view -> {
             if(paginaAtual > 0){
                 paginaAtual--;
                 updateDots(true);
-                setOptions();
+                setOptions(opcoesBackend);
             }
             });
         questionLayoutBinding.nextButton.setOnClickListener(view -> {
             if(paginaAtual < totalPaginas-1){
                 paginaAtual++;
                 updateDots(false);
-                setOptions();
+                setOptions(opcoesBackend);
             }
         });
     }

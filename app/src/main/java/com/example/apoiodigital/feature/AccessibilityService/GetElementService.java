@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.example.apoiodigital.feature.tutorial.data.ChecksInformationNeedsRequestDTO;
 import com.example.apoiodigital.feature.tutorial.data.FindBestAnswerResponseDTO;
 import com.example.apoiodigital.feature.tutorial.data.Bounds;
 import com.example.apoiodigital.feature.tutorial.data.FindBestAnswerRequestDTO;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
 public class GetElementService extends AccessibilityService {
 
     private final List<Componente> components = new ArrayList<>();
-    private final TutorialViewModel service = new TutorialViewModel(this);
+    private TutorialViewModel tutorialViewModel;
     private AccessibilityNodeInfo chosedComponent;
     private List<AccessibilityNodeInfo> nodesSent = new ArrayList<>();
     private int idComponent = 0;
@@ -39,7 +40,6 @@ public class GetElementService extends AccessibilityService {
     private String promptCache;
     private String requisicaoIdCache;
     private String contextoCache = "";
-
 
 
     // This function is used to send Components to IA
@@ -52,9 +52,7 @@ public class GetElementService extends AccessibilityService {
             String prompt = intent.getStringExtra("prompt");
             String id_requisicao = intent.getStringExtra("id_requisicao");
             String contexto = intent.getStringExtra("contexto");
-            FindBestAnswerRequestDTO requestDTO = new FindBestAnswerRequestDTO();
 
-            requestDTO.setElementos(components);
 
             if(prompt != null){
                 promptCache = prompt;
@@ -62,14 +60,54 @@ public class GetElementService extends AccessibilityService {
             if(id_requisicao != null){
                 requisicaoIdCache = id_requisicao;
             }
-            if(contexto != null){
+            if(contexto != null) {
                 contextoCache = contexto;
             }
 
+            // ----
+            ChecksInformationNeedsRequestDTO checksInformationNeedsRequestDTO =
+                    new ChecksInformationNeedsRequestDTO(components, contextoCache, promptCache);
+
+            tutorialViewModel.checkInfomationNeeds(checksInformationNeedsRequestDTO);
+            // ----
+
+
+        }
+    };
+
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        this.tutorialViewModel = new TutorialViewModel(this);
+
+        tutorialViewModel.getChecksInformationNeedsResponse().observeForever(response -> {
+            if(response != null) return;
+
+            FindBestAnswerRequestDTO requestDTO = new FindBestAnswerRequestDTO();
+
+            requestDTO.setElementos(components);
             requestDTO.setContexto(contextoCache);
             requestDTO.setPrompt(promptCache);
+            tutorialViewModel.getResponseIA(requestDTO);
 
-            service.getResponseIA(requestDTO);
+        });
+
+    }
+
+    private final BroadcastReceiver sendToIAWithAddittionalInfo = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            FindBestAnswerRequestDTO requestDTO = new FindBestAnswerRequestDTO();
+
+            requestDTO.setElementos(components);
+            requestDTO.setContexto(contextoCache);
+            requestDTO.setPrompt(promptCache);
+            requestDTO.setPergunta_especificacao(intent.getStringExtra("pergunta_espc"));
+            requestDTO.setResposta_especificacao(intent.getStringExtra("resposta_espc"));
+
+            tutorialViewModel.getResponseIA(requestDTO);
         }
     };
 
@@ -257,6 +295,12 @@ public class GetElementService extends AccessibilityService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             registerReceiver(clickReceiver, intentFilter3, RECEIVER_EXPORTED);
         }
+
+        IntentFilter intentFilter4 = new IntentFilter();
+        intentFilter3.addAction("com.example.apoiodigital.SEND_TO_AI_WITH_ADDITIONAL_INFO");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            registerReceiver(sendToIAWithAddittionalInfo, intentFilter3, RECEIVER_EXPORTED);
+        }
 //        getViewEvent();
 
         var info = new AccessibilityServiceInfo();
@@ -275,6 +319,7 @@ public class GetElementService extends AccessibilityService {
         unregisterReceiver(receiverSendComponents);
         unregisterReceiver(clickReceiver);
         unregisterReceiver(receiverResponseIA);
+        unregisterReceiver(sendToIAWithAddittionalInfo);
 
         super.onDestroy();
 

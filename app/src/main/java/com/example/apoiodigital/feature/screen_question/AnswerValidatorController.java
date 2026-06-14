@@ -17,8 +17,8 @@ public class AnswerValidatorController {
         return state;
     }
 
-    public AnswerValidatorController(AnswerValidatorRepository answerValidatorRepository) {
-        this.answerValidatorRepository = answerValidatorRepository;
+    public AnswerValidatorController() {
+        this.answerValidatorRepository = new AnswerValidatorRepository();
     }
 
     public void validarRespostaDaNecessidade(UserAnswerValidatorRequestDTO request) {

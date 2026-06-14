@@ -6,6 +6,7 @@ import android.view.WindowManager;
 
 import com.example.apoiodigital.databinding.OverlayLayoutBinding;
 import com.example.apoiodigital.feature.modal.ModalView;
+import com.example.apoiodigital.feature.screen_question.QuestionView;
 import com.example.apoiodigital.feature.tutorial.TutorialView;
 
 public class OverlayViewManager {
@@ -71,7 +72,19 @@ public class OverlayViewManager {
         });
     }
 
-    public void showQuestionView(){
+    public void showQuestionView(View mainOverlay, OverlayLayoutBinding overlayLayoutBinding){
+
+        removeCurrentView();
+
+        QuestionView questionView = new QuestionView(context);
+        windowManager.updateViewLayout(mainOverlay, windowManagerUtils.getWindowParams());
+
+        overlayLayoutBinding.container.removeAllViews();
+        overlayLayoutBinding.container.addView(questionView);
+
+        overlayLayoutBinding.closeBtn.bringToFront();
+
+        currentView = questionView;
 
     }
 

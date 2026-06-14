@@ -8,4 +8,9 @@ public class ChecksInformationNeedsRequestDTO {
     String contexto;
     String prompt;
 
+    public ChecksInformationNeedsRequestDTO(List<Componente> elementos, String contexto, String prompt) {
+        this.elementos = elementos;
+        this.contexto = contexto;
+        this.prompt = prompt;
+    }
 }

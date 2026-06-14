@@ -26,6 +26,11 @@ import com.example.apoiodigital.feature.modal.data.RequisicaoInput;
 import com.example.apoiodigital.feature.modal.service.OpenAppService;
 import com.example.apoiodigital.feature.modal.viewmodel.AtalhoController;
 import com.example.apoiodigital.feature.modal.viewmodel.RequisicaoController;
+import com.example.apoiodigital.feature.screen_question.AnswerValidatorController;
+import com.example.apoiodigital.feature.screen_question.InputService;
+import com.example.apoiodigital.feature.screen_question.QuestionView;
+import com.example.apoiodigital.feature.screen_question.UserAnswerValidatorRequestDTO;
+import com.example.apoiodigital.feature.tutorial.TutorialViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +40,9 @@ public class OverlayService extends LifecycleService {
     private RequisicaoController requisicaoController;
     private AtalhoController atalhoController;
     private UsuarioController usuarioController;
+    private AnswerValidatorController answerValidatorController;
 
+    private TutorialViewModel tutorialViewModel;
     private WindowManager windowManager;
     private OverlayLayoutBinding overlayLayoutBinding;
 
@@ -55,6 +62,8 @@ public class OverlayService extends LifecycleService {
         requisicaoController = new RequisicaoController();
         atalhoController = new AtalhoController();
         usuarioController = new UsuarioController();
+        tutorialViewModel = new TutorialViewModel(this);
+        answerValidatorController = new AnswerValidatorController();
 
         usuarioController.getIdByToken(this);
 
@@ -121,6 +130,38 @@ public class OverlayService extends LifecycleService {
     }
 
     private void setupObservers(){
+        tutorialViewModel.getChecksInformationNeedsResponse().observe(this, response -> {
+            if(response == null) return;
+
+            viewManager.showQuestionView(mainOverlay, overlayLayoutBinding);
+            QuestionView questionView = (QuestionView) viewManager.getCurrentView();
+            questionView.setCarrossel(response.getOpcoes());
+            questionView.setInput(new InputService.InputListener() {
+                @Override
+                public void onPromptButtonClick(String pergunta, String resposta) {
+                    UserAnswerValidatorRequestDTO dto = new UserAnswerValidatorRequestDTO(
+                        response.getContexto(),
+                       pergunta,
+                       resposta,
+                       response.getTipo_pendencia(),
+                       response.getDescricao_duvida()
+               );
+
+                answerValidatorController.validarRespostaDaNecessidade(dto);
+                }
+            });
+        });
+
+        answerValidatorController.getResponseData().observe(this, response -> {
+            if(response.isSatisfaz()){
+                Intent i = new Intent("com.example.apoiodigital.SEND_TO_AI_WITH_ADDITIONAL_INFO");
+                i.putExtra("pergunta_espc", response.getPergunta_especificacao());
+                i.putExtra("resposta_espc", response.getResposta_especificacao());
+
+                sendBroadcast(i);
+            }
+        });
+
         requisicaoController.getState().observeForever(state -> {
             modalView.setModalLoading(state.isLoading());
         });

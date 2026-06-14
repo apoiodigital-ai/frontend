@@ -23,10 +23,16 @@ public class TutorialViewModel {
     private final RespostaService respostaService = new RespostaService();
     private final TutorialRepository tutorialRepository = new TutorialRepository(respostaService);
     private final MutableLiveData<Boolean> isRespostaLoading = new MutableLiveData<>();
+    private final MutableLiveData<ChecksInformationNeedsResponseDTO> checksInformationNeedsResponse = new MutableLiveData<>();
     private FindBestAnswerResponseDTO dataResponse;
     private final String TAG = "TutorialViewModelLOGE";
 
     private final Context context;
+
+    public MutableLiveData<ChecksInformationNeedsResponseDTO> getChecksInformationNeedsResponse() {
+        return checksInformationNeedsResponse;
+
+    }
 
     public TutorialViewModel(Context context) {
         this.context = context;
@@ -66,7 +72,14 @@ public class TutorialViewModel {
         tutorialRepository.validarNecessidadeInformacoes(requestDTO).enqueue(new Callback<ChecksInformationNeedsResponseDTO>() {
             @Override
             public void onResponse(Call<ChecksInformationNeedsResponseDTO> call, Response<ChecksInformationNeedsResponseDTO> response) {
+                if(response.body() != null && response.isSuccessful()){
+                    checksInformationNeedsResponse.postValue(response.body());
 
+
+
+                }else {
+                    checksInformationNeedsResponse.postValue(null);
+                }
             }
 
             @Override
