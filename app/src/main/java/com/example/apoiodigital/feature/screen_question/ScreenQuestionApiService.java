@@ -6,7 +6,7 @@ import retrofit2.http.POST;
 
 public interface ScreenQuestionApiService {
 
-    @POST("validar/resposta-necessidade")
+    @POST("resposta/validar/resposta-necessidade")
     Call<UserAnswerValidatorResponseDTO> validarRespostaDaNecessidade(
             @Body UserAnswerValidatorRequestDTO request
     );

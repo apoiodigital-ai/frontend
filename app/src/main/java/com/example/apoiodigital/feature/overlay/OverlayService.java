@@ -156,7 +156,7 @@ public class OverlayService extends LifecycleService {
                        response.getDescricao_duvida()
                );
 
-                answerValidatorController.validarRespostaDaNecessidade(dto);
+                    answerValidatorController.validarRespostaDaNecessidade(dto);
                 }
             });
         });
@@ -168,6 +168,7 @@ public class OverlayService extends LifecycleService {
                 i.putExtra("resposta_espc", response.getResposta_especificacao());
 
                 sendBroadcast(i);
+                viewManager.showTutorialView(mainOverlay, overlayLayoutBinding);
             }
         });
 

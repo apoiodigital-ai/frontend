@@ -296,7 +296,7 @@ public class GetElementService extends AccessibilityService {
         }
 
         IntentFilter intentFilter4 = new IntentFilter();
-        intentFilter3.addAction("com.example.apoiodigital.SEND_TO_AI_WITH_ADDITIONAL_INFO");
+        intentFilter4.addAction("com.example.apoiodigital.SEND_TO_AI_WITH_ADDITIONAL_INFO");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             registerReceiver(sendToIAWithAdditionalInfo, intentFilter4, RECEIVER_EXPORTED);
         }
