@@ -29,11 +29,11 @@ import java.util.List;
 
 public class OverlayViewModel extends ViewModel {
 
-    private RequisicaoController requisicaoController;
-    private AtalhoController atalhoController;
-    private UsuarioController usuarioController;
-    private AnswerValidatorController answerValidatorController;
-    private TutorialViewModel tutorialViewModel;
+    private final RequisicaoController requisicaoController;
+    private final AtalhoController atalhoController;
+    private final UsuarioController usuarioController;
+    private final AnswerValidatorController answerValidatorController;
+    private final TutorialViewModel tutorialViewModel;
 
 
     private final OverlayLayoutBinding overlayLayoutBinding;
@@ -75,7 +75,7 @@ public class OverlayViewModel extends ViewModel {
     }
 
     public void setupObservers(View mainOverlay, List<Atalho> atalhosCache, LifecycleOwner owner, OverlayListener overlayListener){
-        tutorialViewModel.getChecksInformationNeedsResponse().observeForever(response -> {
+        tutorialViewModel.getChecksInformationNeedsResponse().observe(owner, response -> {
             if(response == null) return;
 
             Log.e("OVERLAYSERVICE", "setupObservers: " + response.getDescricao_duvida());
@@ -111,21 +111,17 @@ public class OverlayViewModel extends ViewModel {
             });
         });
 
-        answerValidatorController.getResponseData().observeForever(response -> {
+        answerValidatorController.getResponseData().observe(owner,response -> {
             if(response.isSatisfaz()){
                 overlayListener.onEnviarDadosAdicionais(response.getPergunta_especificacao(), response.getResposta_especificacao());
-//                enviarDadosAdicionaisParaIA(response.getPergunta_especificacao(), response.getResposta_especificacao());
             }
         });
 
-        requisicaoController.getState().observeForever(state -> {
+        requisicaoController.getState().observe(owner, state -> {
             modalView.setModalLoading(state.isLoading());
         });
 
-        requisicaoController.getRequisicaoResponse().observeForever(resp -> {
-//            String contexto = abrirAplicativoERetornarContexto(resp.getRequisicao());
-//
-//            enviarDadosParaIA(resp.getRequisicao().getPrompt(), resp.getRequisicao().getId(), contexto);
+        requisicaoController.getRequisicaoResponse().observe(owner, resp -> {
 
             overlayListener.onAbrirApp(resp.getRequisicao());
 
@@ -148,17 +144,13 @@ public class OverlayViewModel extends ViewModel {
         });
 
 
-        atalhoController.getAtalhoResponse().observeForever(requisicao -> {
-
-//            String contexto = abrirAplicativoERetornarContexto(requisicao);
-//
-//            enviarDadosParaIA(requisicao.getPrompt(), requisicao.getId(), contexto);
+        atalhoController.getAtalhoResponse().observe(owner, requisicao -> {
 
             overlayListener.onAbrirApp(requisicao);
 
         });
 
-        atalhoController.getGetAtalhosResponse().observeForever(atalhos -> {
+        atalhoController.getGetAtalhosResponse().observe(owner,atalhos -> {
 
             if (atalhos.size() >= 3) {
                 modalView.setAtalhosText(atalhos);
@@ -168,11 +160,11 @@ public class OverlayViewModel extends ViewModel {
             atalhosCache.addAll(atalhos);
         });
 
-        atalhoController.getGetAtalhosState().observeForever(state -> {
+        atalhoController.getGetAtalhosState().observe(owner,state -> {
             modalView.setAtalhoLoading(state.isLoading());
         });
 
-        usuarioController.getUserID().observeForever(userIDDTO -> {
+        usuarioController.getUserID().observe(owner, userIDDTO -> {
 
             if (userIDDTO == null || userIDDTO.getUserID() == null) {
                 Log.e("ModalView", "Erro: API retornou userIDDTO nulo!");
