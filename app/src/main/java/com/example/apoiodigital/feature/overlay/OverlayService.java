@@ -39,16 +39,9 @@ import java.util.List;
 
 public class OverlayService extends LifecycleService {
 
-    private RequisicaoController requisicaoController;
-    private AtalhoController atalhoController;
-    private UsuarioController usuarioController;
-    private AnswerValidatorController answerValidatorController;
-
-    private TutorialViewModel tutorialViewModel;
     private WindowManager windowManager;
     private OverlayLayoutBinding overlayLayoutBinding;
 
-    private ModalView modalView;
     private View mainOverlay;
 
     private final List<Atalho> atalhosCache = new ArrayList<>();
@@ -60,14 +53,6 @@ public class OverlayService extends LifecycleService {
     public void onCreate() {
         super.onCreate();
         criarNotificacaoForeground();
-
-        requisicaoController = new RequisicaoController();
-        atalhoController = new AtalhoController();
-        usuarioController = new UsuarioController();
-        tutorialViewModel = new TutorialViewModel(this);
-        answerValidatorController = new AnswerValidatorController();
-
-        usuarioController.getIdByToken(this);
 
         WindowManagerUtils windowManagerUtils = new WindowManagerUtils();
 
@@ -85,7 +70,20 @@ public class OverlayService extends LifecycleService {
 
         viewManager = new OverlayViewManager(this);
 
-        setupObservers();
+        OverlayViewModel overlayViewModel = new OverlayViewModel(this, overlayLayoutBinding);
+        overlayViewModel.setupObservers(mainOverlay, atalhosCache, this, new OverlayViewModel.OverlayListener() {
+                    @Override
+                    public void onAbrirApp(Requisicao requisicao) {
+                        String contexto = abrirAplicativoERetornarContexto(requisicao);
+                        enviarDadosParaIA(requisicao.getPrompt(), requisicao.getId(), contexto);
+                };
+                    @Override
+                    public void onEnviarDadosAdicionais(String pergunta, String resposta) {
+                        enviarDadosAdicionaisParaIA(pergunta, resposta);
+                    }
+        });
+
+//        setupObservers();
     }
 
     @Override
@@ -94,23 +92,6 @@ public class OverlayService extends LifecycleService {
         if(windowManager != null && mainOverlay != null){
             windowManager.removeView(mainOverlay);
         }
-    }
-
-    public void iniciarFluxoModal(String userID){
-        viewManager.showModalView(new ModalView.ModalListener() {
-            @Override
-            public void onPromptSent(String prompt) {
-                var request = new RequisicaoInput(prompt, userID);
-                requisicaoController.enviarRequisicao(request);
-            }
-
-            @Override
-            public void atalhoInit(int index) {
-                atalhoController.iniciarAtalho(atalhosCache.get(index).getId());
-            }
-        }, overlayLayoutBinding);
-
-        modalView = (ModalView) viewManager.getCurrentView();
     }
 
     private void criarNotificacaoForeground() {
@@ -132,114 +113,6 @@ public class OverlayService extends LifecycleService {
                 .build();
 
         startForeground(1, notification);
-    }
-
-    private void setupObservers(){
-        tutorialViewModel.getChecksInformationNeedsResponse().observeForever(response -> {
-            if(response == null) return;
-
-            Log.e("OVERLAYSERVICE", "setupObservers: " + response.getDescricao_duvida());
-
-            viewManager.showQuestionView(mainOverlay, overlayLayoutBinding);
-            QuestionView questionView = (QuestionView) viewManager.getCurrentView();
-            questionView.setQuestion(response.getPergunta());
-            questionView.setCarrossel(response.getOpcoes());
-
-            questionView.setButtonClick(new CarrosselService.ButtonListener() {
-                @Override
-                public void onClick(String pergunta, String resposta) {
-                    enviarDadosAdicionaisParaIA(pergunta, resposta);
-                }
-            });
-
-            questionView.setInput(new InputService.InputListener() {
-                @Override
-                public void onPromptButtonClick(String pergunta, String resposta) {
-                    Log.e("OVERLAYSERVICE", "onPromptButtonClick: " + resposta);
-
-                    UserAnswerValidatorRequestDTO dto = new UserAnswerValidatorRequestDTO(
-                        response.getContexto(),
-                       pergunta,
-                       resposta,
-                       response.getTipo_pendencia(),
-                       response.getDescricao_duvida()
-               );
-
-                    answerValidatorController.validarRespostaDaNecessidade(dto);
-                }
-            });
-        });
-
-        answerValidatorController.getResponseData().observeForever(response -> {
-            if(response.isSatisfaz()){
-                enviarDadosAdicionaisParaIA(response.getPergunta_especificacao(), response.getResposta_especificacao());
-            }
-        });
-
-        requisicaoController.getState().observeForever(state -> {
-            modalView.setModalLoading(state.isLoading());
-        });
-
-        requisicaoController.getRequisicaoResponse().observeForever(resp -> {
-            String contexto = abrirAplicativoERetornarContexto(resp.getRequisicao());
-
-            enviarDadosParaIA(resp.getRequisicao().getPrompt(), resp.getRequisicao().getId(), contexto);
-
-        });
-
-        requisicaoController.getState().observe(this, state -> {
-            if(state.isSuccess()){
-
-                viewManager.showTutorialView(mainOverlay, overlayLayoutBinding);
-            }
-        });
-
-        atalhoController.getInitAtalhoState().observe(this, state -> {
-            if(state.isSuccess()){
-
-
-                viewManager.showTutorialView(mainOverlay, overlayLayoutBinding);
-            }
-
-        });
-
-
-        atalhoController.getAtalhoResponse().observeForever(requisicao -> {
-
-            String contexto = abrirAplicativoERetornarContexto(requisicao);
-
-            enviarDadosParaIA(requisicao.getPrompt(), requisicao.getId(), contexto);
-
-        });
-
-        atalhoController.getGetAtalhosResponse().observeForever(atalhos -> {
-
-            if (atalhos.size() >= 3) {
-                modalView.setAtalhosText(atalhos);
-            }
-
-            atalhosCache.clear();
-            atalhosCache.addAll(atalhos);
-        });
-
-        atalhoController.getGetAtalhosState().observeForever(state -> {
-            modalView.setAtalhoLoading(state.isLoading());
-        });
-
-        usuarioController.getUserID().observeForever(userIDDTO -> {
-
-            if (userIDDTO == null || userIDDTO.getUserID() == null) {
-                Log.e("ModalView", "Erro: API retornou userIDDTO nulo!");
-                return;
-            }
-
-            String userID = userIDDTO.getUserID().toString();
-            iniciarFluxoModal(userID);
-            atalhoController.carregarAtalhos(userID);
-            modalView.setModalSettings();
-
-
-        });
     }
 
     private void enviarDadosParaIA(String prompt, String id_requisicao, String contexto){
