@@ -70,20 +70,29 @@ public class OverlayService extends LifecycleService {
 
         viewManager = new OverlayViewManager(this);
 
-        OverlayViewModel overlayViewModel = new OverlayViewModel(this, overlayLayoutBinding);
+        OverlayViewModel overlayViewModel = new OverlayViewModel(this, overlayLayoutBinding, viewManager);
         overlayViewModel.setupObservers(mainOverlay, atalhosCache, this, new OverlayViewModel.OverlayListener() {
-                    @Override
-                    public void onAbrirApp(Requisicao requisicao) {
+            @Override
+            public void onAbrirApp(Requisicao requisicao) {
                         String contexto = abrirAplicativoERetornarContexto(requisicao);
                         enviarDadosParaIA(requisicao.getPrompt(), requisicao.getId(), contexto);
                 };
-                    @Override
-                    public void onEnviarDadosAdicionais(String pergunta, String resposta) {
+            @Override
+            public void onEnviarDadosAdicionais(String pergunta, String resposta) {
                         enviarDadosAdicionaisParaIA(pergunta, resposta);
                     }
+
+            @Override
+            public void onMostrarTutorialView() {
+                viewManager.showTutorialView(mainOverlay, overlayLayoutBinding, new OverlayViewManager.TutorialCallBack() {
+                    @Override
+                    public void onCloseButtonClicked() {
+                        stopSelf();
+                    }
+                });
+            }
         });
 
-//        setupObservers();
     }
 
     @Override
@@ -134,7 +143,12 @@ public class OverlayService extends LifecycleService {
         i.putExtra("resposta_espc", resposta);
 
         sendBroadcast(i);
-        viewManager.showTutorialView(mainOverlay, overlayLayoutBinding);
+        viewManager.showTutorialView(mainOverlay, overlayLayoutBinding, new OverlayViewManager.TutorialCallBack() {
+            @Override
+            public void onCloseButtonClicked() {
+                stopSelf();
+            }
+        });
     }
 
     private String abrirAplicativoERetornarContexto(Requisicao requisicao){

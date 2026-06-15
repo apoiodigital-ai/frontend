@@ -35,17 +35,16 @@ public class OverlayViewModel extends ViewModel {
     private final AnswerValidatorController answerValidatorController;
     private final TutorialViewModel tutorialViewModel;
 
-
     private final OverlayLayoutBinding overlayLayoutBinding;
 
     private final OverlayViewManager viewManager;
 
     private ModalView modalView;
 
-    public OverlayViewModel(Context context, OverlayLayoutBinding overlayLayoutBinding) {
+    public OverlayViewModel(Context context, OverlayLayoutBinding overlayLayoutBinding, OverlayViewManager viewManager) {
 
         this.overlayLayoutBinding = overlayLayoutBinding;
-        this.viewManager = new OverlayViewManager(context);
+        this.viewManager = viewManager;
 
         requisicaoController = new RequisicaoController();
         atalhoController = new AtalhoController();
@@ -130,15 +129,16 @@ public class OverlayViewModel extends ViewModel {
         requisicaoController.getState().observe(owner, state -> {
             if(state.isSuccess()){
 
-                viewManager.showTutorialView(mainOverlay, overlayLayoutBinding);
+                overlayListener.onMostrarTutorialView();
+//                viewManager.showTutorialView(mainOverlay, overlayLayoutBinding);
             }
         });
 
         atalhoController.getInitAtalhoState().observe(owner, state -> {
             if(state.isSuccess()){
 
+                overlayListener.onMostrarTutorialView();
 
-                viewManager.showTutorialView(mainOverlay, overlayLayoutBinding);
             }
 
         });
@@ -184,7 +184,7 @@ public class OverlayViewModel extends ViewModel {
     public interface OverlayListener{
         void onAbrirApp(Requisicao requisicao);
         void onEnviarDadosAdicionais(String pergunta, String resposta);
-
+        void onMostrarTutorialView();
     }
 
 }

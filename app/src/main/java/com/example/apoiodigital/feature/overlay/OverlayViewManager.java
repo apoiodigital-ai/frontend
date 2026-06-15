@@ -56,7 +56,7 @@ public class OverlayViewManager {
         currentView = modal;
     }
 
-    public void showTutorialView(View mainOverlay, OverlayLayoutBinding overlayLayoutBinding) {
+    public void showTutorialView(View mainOverlay, OverlayLayoutBinding overlayLayoutBinding, TutorialCallBack tutorialCallBack) {
         removeCurrentView();
 
         TutorialView tutorial = new TutorialView(context, overlayLayoutBinding);
@@ -70,13 +70,13 @@ public class OverlayViewManager {
 
         currentView = tutorial;
 
-        //TODO: needs to fix the close button when mask is appearing
         overlayLayoutBinding.closeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Fix: Remove the top-level overlay view from WindowManager
 
-                windowManager.removeView(mainOverlay);
+                tutorialCallBack.onCloseButtonClicked();
+//                windowManager.removeView(mainOverlay);
 
             }
         });
@@ -98,7 +98,9 @@ public class OverlayViewManager {
 
     }
 
-
+    public interface TutorialCallBack{
+        void onCloseButtonClicked();
+    }
 
 
 
