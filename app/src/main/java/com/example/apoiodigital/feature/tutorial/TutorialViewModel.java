@@ -57,7 +57,7 @@ public class TutorialViewModel {
         this.context = context;
     }
 
-    //TODO: needs to update in GetElementService
+
     public void getResponseIA(FindBestAnswerRequestDTO requestDTO) {
         isRespostaLoading.postValue(true);
         tutorialRepository.getIaMessage(requestDTO).enqueue(new Callback<FindBestAnswerResponseDTO>() {
@@ -65,15 +65,6 @@ public class TutorialViewModel {
             public void onResponse(Call<FindBestAnswerResponseDTO> call, Response<FindBestAnswerResponseDTO> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     answerResponse.postValue(response.body());
-//                    dataResponse = response.body();
-//                    Log.e(TAG, "onResponse: " + dataResponse);
-//
-//                    Intent responseIntent = new Intent("com.example.apoiodigital.GET_RESPONSE_IA");
-//
-//                    Gson gson = new Gson();
-//                    String responseString = gson.toJson(dataResponse);
-//                    responseIntent.putExtra("responseIA", responseString);
-//                    context.sendBroadcast(responseIntent);
                 } else {
                     Log.e(TAG, "Erro: " + response.code());
                 }

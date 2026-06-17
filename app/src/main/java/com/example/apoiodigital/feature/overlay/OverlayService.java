@@ -128,18 +128,6 @@ public class OverlayService extends LifecycleService {
         startForeground(1, notification);
     }
 
-    private void enviarDadosParaIA(String prompt, String id_requisicao, String contexto){
-
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            Intent i = new Intent("com.example.apoiodigital.SEND_TO_IA");
-            i.putExtra("prompt", prompt);
-            i.putExtra("id_requisicao", id_requisicao);
-            i.putExtra("contexto", contexto);
-
-            sendBroadcast(i);
-        }, 4000);
-
-    }
 
     private String abrirAplicativoERetornarContexto(Requisicao requisicao){
         String pacoteApp = requisicao.getAppSuportado().getPacote();
