@@ -33,6 +33,7 @@ import com.example.apoiodigital.feature.screen_question.InputService;
 import com.example.apoiodigital.feature.screen_question.QuestionView;
 import com.example.apoiodigital.feature.screen_question.UserAnswerValidatorRequestDTO;
 import com.example.apoiodigital.feature.tutorial.TutorialViewModel;
+import com.example.apoiodigital.feature.tutorial.data.BaseDataToIADTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,14 +74,17 @@ public class OverlayService extends LifecycleService {
         OverlayViewModel overlayViewModel = new OverlayViewModel(this, overlayLayoutBinding, viewManager);
         overlayViewModel.setupObservers(mainOverlay, atalhosCache, this, new OverlayViewModel.OverlayListener() {
             @Override
-            public void onAbrirApp(Requisicao requisicao) {
+            public void onAbrirApp(Requisicao requisicao, TutorialViewModel tutorialViewModel) {
                         String contexto = abrirAplicativoERetornarContexto(requisicao);
-                        enviarDadosParaIA(requisicao.getPrompt(), requisicao.getId(), contexto);
+
+                        BaseDataToIADTO baseDataToIADTO = new BaseDataToIADTO(requisicao.getPrompt(), contexto, requisicao.getId());
+
+                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                            tutorialViewModel.getBaseDataToIA().postValue(baseDataToIADTO);
+                        }, 4000);
+
+//                        enviarDadosParaIA(requisicao.getPrompt(), requisicao.getId(), contexto);
                 };
-            @Override
-            public void onEnviarDadosAdicionais(String pergunta, String resposta) {
-                        enviarDadosAdicionaisParaIA(pergunta, resposta);
-                    }
 
             @Override
             public void onMostrarTutorialView() {
@@ -135,20 +139,6 @@ public class OverlayService extends LifecycleService {
             sendBroadcast(i);
         }, 4000);
 
-    }
-
-    private void enviarDadosAdicionaisParaIA(String pergunta, String resposta){
-        Intent i = new Intent("com.example.apoiodigital.SEND_TO_AI_WITH_ADDITIONAL_INFO");
-        i.putExtra("pergunta_espc", pergunta);
-        i.putExtra("resposta_espc", resposta);
-
-        sendBroadcast(i);
-        viewManager.showTutorialView(mainOverlay, overlayLayoutBinding, new OverlayViewManager.TutorialCallBack() {
-            @Override
-            public void onCloseButtonClicked() {
-                stopSelf();
-            }
-        });
     }
 
     private String abrirAplicativoERetornarContexto(Requisicao requisicao){

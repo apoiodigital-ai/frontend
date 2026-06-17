@@ -24,6 +24,7 @@ import com.example.apoiodigital.feature.screen_question.InputService;
 import com.example.apoiodigital.feature.screen_question.QuestionView;
 import com.example.apoiodigital.feature.screen_question.UserAnswerValidatorRequestDTO;
 import com.example.apoiodigital.feature.tutorial.TutorialViewModel;
+import com.example.apoiodigital.feature.tutorial.data.AdditionalInfoDTO;
 
 import java.util.List;
 
@@ -88,7 +89,10 @@ public class OverlayViewModel extends ViewModel {
                 @Override
                 public void onClick(String pergunta, String resposta) {
                     //enviarDadosAdicionaisParaIA(pergunta, resposta);
-                    overlayListener.onEnviarDadosAdicionais(pergunta, resposta);
+                    AdditionalInfoDTO dto = new AdditionalInfoDTO(pergunta, resposta);
+//                    overlayListener.onEnviarDadosAdicionais(dto);
+                    tutorialViewModel.getAdditionalInfo().postValue(dto);
+                    overlayListener.onMostrarTutorialView();
                 }
             });
 
@@ -112,7 +116,10 @@ public class OverlayViewModel extends ViewModel {
 
         answerValidatorController.getResponseData().observe(owner,response -> {
             if(response.isSatisfaz()){
-                overlayListener.onEnviarDadosAdicionais(response.getPergunta_especificacao(), response.getResposta_especificacao());
+                AdditionalInfoDTO dto = new AdditionalInfoDTO(response.getPergunta_especificacao(), response.getResposta_especificacao());
+                tutorialViewModel.getAdditionalInfo().postValue(dto);
+                overlayListener.onMostrarTutorialView();
+//                overlayListener.onEnviarDadosAdicionais(dto);
             }
         });
 
@@ -122,7 +129,7 @@ public class OverlayViewModel extends ViewModel {
 
         requisicaoController.getRequisicaoResponse().observe(owner, resp -> {
 
-            overlayListener.onAbrirApp(resp.getRequisicao());
+            overlayListener.onAbrirApp(resp.getRequisicao(), this.tutorialViewModel);
 
         });
 
@@ -146,7 +153,7 @@ public class OverlayViewModel extends ViewModel {
 
         atalhoController.getAtalhoResponse().observe(owner, requisicao -> {
 
-            overlayListener.onAbrirApp(requisicao);
+            overlayListener.onAbrirApp(requisicao, this.tutorialViewModel);
 
         });
 
@@ -182,8 +189,8 @@ public class OverlayViewModel extends ViewModel {
 
 
     public interface OverlayListener{
-        void onAbrirApp(Requisicao requisicao);
-        void onEnviarDadosAdicionais(String pergunta, String resposta);
+        void onAbrirApp(Requisicao requisicao, TutorialViewModel tutorialViewModel);
+
         void onMostrarTutorialView();
     }
 

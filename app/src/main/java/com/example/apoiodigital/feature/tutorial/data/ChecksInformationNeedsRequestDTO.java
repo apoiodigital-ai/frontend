@@ -13,4 +13,8 @@ public class ChecksInformationNeedsRequestDTO {
         this.contexto = contexto;
         this.prompt = prompt;
     }
+
+    public String getContexto() {
+        return contexto;
+    }
 }

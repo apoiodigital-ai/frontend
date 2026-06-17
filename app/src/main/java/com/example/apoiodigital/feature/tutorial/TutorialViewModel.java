@@ -4,8 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.apoiodigital.feature.tutorial.data.AdditionalInfoDTO;
+import com.example.apoiodigital.feature.tutorial.data.BaseDataToIADTO;
 import com.example.apoiodigital.feature.tutorial.data.ChecksInformationNeedsRequestDTO;
 import com.example.apoiodigital.feature.tutorial.data.ChecksInformationNeedsResponseDTO;
 import com.example.apoiodigital.feature.tutorial.data.FindBestAnswerResponseDTO;
@@ -24,7 +27,11 @@ public class TutorialViewModel {
     private final TutorialRepository tutorialRepository = new TutorialRepository(respostaService);
     private final MutableLiveData<Boolean> isRespostaLoading = TutorialStateHolder.getInstance().getIsRespostaLoading();
     private final MutableLiveData<ChecksInformationNeedsResponseDTO> checksInformationNeedsResponse = TutorialStateHolder.getInstance().getChecksInformationNeedsResponse();
-    private FindBestAnswerResponseDTO dataResponse;
+    private final MutableLiveData<FindBestAnswerResponseDTO> answerResponse = TutorialStateHolder.getInstance().getAnswerResponse();
+
+    private final MutableLiveData<BaseDataToIADTO> baseDataToIA = TutorialStateHolder.getInstance().getBaseDataToIA();
+    private final MutableLiveData<AdditionalInfoDTO> additionalInfo = TutorialStateHolder.getInstance().getAdditionalInfo();
+
     private final String TAG = "TutorialViewModelLOGE";
 
     private final Context context;
@@ -34,25 +41,39 @@ public class TutorialViewModel {
 
     }
 
+    public MutableLiveData<FindBestAnswerResponseDTO> getAnswerResponse() {
+        return answerResponse;
+    }
+
+    public MutableLiveData<BaseDataToIADTO> getBaseDataToIA() {
+        return baseDataToIA;
+    }
+
+    public MutableLiveData<AdditionalInfoDTO> getAdditionalInfo() {
+        return additionalInfo;
+    }
+
     public TutorialViewModel(Context context) {
         this.context = context;
     }
 
+    //TODO: needs to update in GetElementService
     public void getResponseIA(FindBestAnswerRequestDTO requestDTO) {
         isRespostaLoading.postValue(true);
         tutorialRepository.getIaMessage(requestDTO).enqueue(new Callback<FindBestAnswerResponseDTO>() {
             @Override
             public void onResponse(Call<FindBestAnswerResponseDTO> call, Response<FindBestAnswerResponseDTO> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    dataResponse = response.body();
-                    Log.e(TAG, "onResponse: " + dataResponse);
-
-                    Intent responseIntent = new Intent("com.example.apoiodigital.GET_RESPONSE_IA");
-
-                    Gson gson = new Gson();
-                    String responseString = gson.toJson(dataResponse);
-                    responseIntent.putExtra("responseIA", responseString);
-                    context.sendBroadcast(responseIntent);
+                    answerResponse.postValue(response.body());
+//                    dataResponse = response.body();
+//                    Log.e(TAG, "onResponse: " + dataResponse);
+//
+//                    Intent responseIntent = new Intent("com.example.apoiodigital.GET_RESPONSE_IA");
+//
+//                    Gson gson = new Gson();
+//                    String responseString = gson.toJson(dataResponse);
+//                    responseIntent.putExtra("responseIA", responseString);
+//                    context.sendBroadcast(responseIntent);
                 } else {
                     Log.e(TAG, "Erro: " + response.code());
                 }
@@ -72,10 +93,14 @@ public class TutorialViewModel {
         tutorialRepository.validarNecessidadeInformacoes(requestDTO).enqueue(new Callback<ChecksInformationNeedsResponseDTO>() {
             @Override
             public void onResponse(Call<ChecksInformationNeedsResponseDTO> call, Response<ChecksInformationNeedsResponseDTO> response) {
-
                 Log.e(TAG, "CHECK FEATURE - onResponse: " + response.body());
 
                 if(response.body() != null && response.isSuccessful()){
+                    isRespostaLoading.postValue(false);
+
+                    ChecksInformationNeedsResponseDTO dto = response.body();
+                    dto.setContexto(requestDTO.getContexto());
+
                     checksInformationNeedsResponse.postValue(response.body());
                     Log.e(TAG, "CHECK FEATURE - onResponse: " + response.body().getDescricao_duvida());
 

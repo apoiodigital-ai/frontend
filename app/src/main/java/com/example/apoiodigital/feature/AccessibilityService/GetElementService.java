@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.example.apoiodigital.feature.tutorial.data.BaseDataToIADTO;
 import com.example.apoiodigital.feature.tutorial.data.ChecksInformationNeedsRequestDTO;
 import com.example.apoiodigital.feature.tutorial.data.FindBestAnswerResponseDTO;
 import com.example.apoiodigital.feature.tutorial.data.Bounds;
@@ -41,104 +42,15 @@ public class GetElementService extends AccessibilityService {
     private String contextoCache = "";
 
 
-    // This function is used to send Components to IA
-    private final BroadcastReceiver receiverSendComponents = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            getViewEvent();
-
-            String prompt = intent.getStringExtra("prompt");
-            String id_requisicao = intent.getStringExtra("id_requisicao");
-            String contexto = intent.getStringExtra("contexto");
-
-
-            if(prompt != null){
-                promptCache = prompt;
-            }
-            if(id_requisicao != null){
-                requisicaoIdCache = id_requisicao;
-            }
-            if(contexto != null) {
-                contextoCache = contexto;
-            }
-
-            // ----
-            ChecksInformationNeedsRequestDTO checksInformationNeedsRequestDTO =
-                    new ChecksInformationNeedsRequestDTO(components, contextoCache, promptCache);
-
-            tutorialViewModel.checkInformationNeeds(checksInformationNeedsRequestDTO);
-            // ----
-
-
-        }
-    };
-
-
     @Override
     public void onCreate() {
         super.onCreate();
 
         this.tutorialViewModel = new TutorialViewModel(this);
 
-        tutorialViewModel.getChecksInformationNeedsResponse().observeForever(response -> {
-            if(response != null) return;
-
-            FindBestAnswerRequestDTO requestDTO = new FindBestAnswerRequestDTO();
-
-            requestDTO.setElementos(components);
-            requestDTO.setContexto(contextoCache);
-            requestDTO.setPrompt(promptCache);
-            tutorialViewModel.getResponseIA(requestDTO);
-
-        });
+        setupObservers();
 
     }
-
-    private final BroadcastReceiver sendToIAWithAdditionalInfo = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            FindBestAnswerRequestDTO requestDTO = new FindBestAnswerRequestDTO();
-
-            requestDTO.setElementos(components);
-            requestDTO.setContexto(contextoCache);
-            requestDTO.setPrompt(promptCache);
-            requestDTO.setPergunta_especificacao(intent.getStringExtra("pergunta_espc"));
-            requestDTO.setResposta_especificacao(intent.getStringExtra("resposta_espc"));
-
-            tutorialViewModel.getResponseIA(requestDTO);
-        }
-    };
-
-    // This function is used to receive the response from the IA and to send other broadcast to MaskActivity
-    private final BroadcastReceiver receiverResponseIA = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Gson gson = new GsonBuilder()
-                    .setLenient()
-                    .create();
-
-            String response = intent.getStringExtra("responseIA");
-
-            FindBestAnswerResponseDTO responseIA = gson.fromJson(response, FindBestAnswerResponseDTO.class);
-
-            if( responseIA.getViewID() == null) return;
-
-            chosedComponent = nodesSent.get(responseIA.getViewID()-1);
-
-            contextoCache = responseIA.getNovo_contexto();
-
-            var rect = new Rect();
-            chosedComponent.getBoundsInScreen(rect);
-            Bounds bounds = new Bounds(rect.left, rect.right, rect.top, rect.bottom);
-
-            String boundsJson = gson.toJson(bounds);
-
-            var intentMask = new Intent("com.example.apoiodigital.SET_MASK_VIEW");
-            intentMask.putExtra("chosedComponentBounds", boundsJson);
-            intentMask.putExtra("messageIA", responseIA.getMensagem_escrita());
-            sendBroadcast(intentMask);
-        }};
 
     // This function is used to receive the click event from the MaskActivity
     private final BroadcastReceiver clickReceiver = new BroadcastReceiver() {
@@ -152,17 +64,90 @@ public class GetElementService extends AccessibilityService {
             }
 
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                var intentSendToIA = new Intent("com.example.apoiodigital.SEND_TO_IA");
-                intentSendToIA.putExtra("requisicao", promptCache);
-                intentSendToIA.putExtra("contexto", contextoCache);
-                sendBroadcast(intentSendToIA);
+                BaseDataToIADTO baseDataToIADTO = new BaseDataToIADTO(promptCache, contextoCache, requisicaoIdCache);
+                tutorialViewModel.getBaseDataToIA().postValue(baseDataToIADTO);
 
             }, 3000); // 3000 milissegundos = 3 segundos
 
-
-
         }
     };
+
+    private void setupObservers(){
+        tutorialViewModel.getAdditionalInfo().observeForever(dto ->
+        {
+
+            FindBestAnswerRequestDTO requestDTO = new FindBestAnswerRequestDTO();
+
+            requestDTO.setElementos(components);
+            requestDTO.setContexto(contextoCache);
+            requestDTO.setPrompt(promptCache);
+            requestDTO.setPergunta_especificacao(dto.getPergunta());
+            requestDTO.setResposta_especificacao(dto.getResposta());
+            tutorialViewModel.getResponseIA(requestDTO);
+
+        });
+
+        tutorialViewModel.getBaseDataToIA().observeForever(dto -> {
+            getViewEvent();
+
+            String prompt = dto.getPrompt();
+            String id_requisicao = dto.getId_requisicao();
+            String contexto = dto.getContexto();
+
+            if(prompt != null){
+                promptCache = prompt;
+            }
+            if(id_requisicao != null){
+                requisicaoIdCache = id_requisicao;
+            }
+            if(contexto != null) {
+                contextoCache = contexto;
+            }
+            Log.e(TAG, "setupObservers: " + contexto);
+            Log.e(TAG, "setupObservers: " + contextoCache);
+
+            // ----
+            ChecksInformationNeedsRequestDTO checksInformationNeedsRequestDTO =
+                    new ChecksInformationNeedsRequestDTO(components, contextoCache, promptCache);
+
+            tutorialViewModel.checkInformationNeeds(checksInformationNeedsRequestDTO);
+            // ----
+        });
+
+        tutorialViewModel.getChecksInformationNeedsResponse().observeForever(response -> {
+            if(response != null) return;
+
+            FindBestAnswerRequestDTO requestDTO = new FindBestAnswerRequestDTO();
+
+            requestDTO.setElementos(components);
+            requestDTO.setContexto(contextoCache);
+            requestDTO.setPrompt(promptCache);
+            tutorialViewModel.getResponseIA(requestDTO);
+
+        });
+
+        tutorialViewModel.getAnswerResponse().observeForever(responseIA -> {
+
+            Gson gson = new Gson();
+
+            if( responseIA.getViewID() == null) return;
+
+            chosedComponent = nodesSent.get(responseIA.getViewID()-1);
+
+            this.contextoCache = responseIA.getNovo_contexto();
+
+            var rect = new Rect();
+            chosedComponent.getBoundsInScreen(rect);
+            Bounds bounds = new Bounds(rect.left, rect.right, rect.top, rect.bottom);
+
+            String boundsJson = gson.toJson(bounds);
+
+            var intentMask = new Intent("com.example.apoiodigital.SET_MASK_VIEW");
+            intentMask.putExtra("chosedComponentBounds", boundsJson);
+            intentMask.putExtra("messageIA", responseIA.getMensagem_escrita());
+            sendBroadcast(intentMask);
+        });
+    }
 
     public boolean filterComponents(AccessibilityNodeInfo node){
         if(!node.isVisibleToUser()) return false;
@@ -277,29 +262,12 @@ public class GetElementService extends AccessibilityService {
 
         super.onServiceConnected();
 
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("com.example.apoiodigital.SEND_TO_IA");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            registerReceiver(receiverSendComponents, intentFilter, RECEIVER_EXPORTED);
-        }
-
-        IntentFilter intentFilter2 = new IntentFilter();
-        intentFilter2.addAction("com.example.apoiodigital.GET_RESPONSE_IA");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            registerReceiver(receiverResponseIA, intentFilter2, RECEIVER_EXPORTED);
-        }
-
         IntentFilter intentFilter3 = new IntentFilter();
         intentFilter3.addAction("com.example.apoiodigital.CLICK_ELEMENT");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             registerReceiver(clickReceiver, intentFilter3, RECEIVER_EXPORTED);
         }
 
-        IntentFilter intentFilter4 = new IntentFilter();
-        intentFilter4.addAction("com.example.apoiodigital.SEND_TO_AI_WITH_ADDITIONAL_INFO");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            registerReceiver(sendToIAWithAdditionalInfo, intentFilter4, RECEIVER_EXPORTED);
-        }
 //        getViewEvent();
 
         var info = new AccessibilityServiceInfo();
@@ -315,10 +283,9 @@ public class GetElementService extends AccessibilityService {
 
     @Override
     public void onDestroy() {
-        unregisterReceiver(receiverSendComponents);
+
         unregisterReceiver(clickReceiver);
-        unregisterReceiver(receiverResponseIA);
-        unregisterReceiver(sendToIAWithAdditionalInfo);
+
 
         super.onDestroy();
 

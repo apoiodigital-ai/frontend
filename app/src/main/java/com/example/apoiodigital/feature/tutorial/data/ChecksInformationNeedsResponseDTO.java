@@ -14,6 +14,10 @@ public class ChecksInformationNeedsResponseDTO {
     public String getContexto() {
         return contexto;
     }
+    public void setContexto(String contexto) {
+        this.contexto = contexto;
+    }
+
 
 
     public String getPergunta() {
